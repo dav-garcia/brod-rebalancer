@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "brokers": [
+    {
+      "broker": 1,
+      "logDirs": [
+        {
+          "logDir": "/opt/kafka/data",
+          "error": null,
+          "partitions": [
+            {
+              "partition": "topic-a-1",
+              "size": 1,
+              "offsetLag": 0,
+              "isFuture": false
+            }, {
+              "partition": "topic-a-2",
+              "size": 2,
+              "offsetLag": 0,
+              "isFuture": false
+            }, {
+              "partition": "topic-b-1",
+              "size": 3,
+              "offsetLag": 0,
+              "isFuture": false
+            }
+          ]
+        }
+      ]
+    }, {
+      "broker": 2,
+      "logDirs": [
+        {
+          "logDir": "/opt/kafka/data-1",
+          "error": null,
+          "partitions": [
+            {
+              "partition": "topic-a-3",
+              "size": 4,
+              "offsetLag": 0,
+              "isFuture": false
+            }, {
+              "partition": "topic-b-2",
+              "size": 5,
+              "offsetLag": 0,
+              "isFuture": false
+            }, {
+              "partition": "topic-b-3",
+              "size": 6,
+              "offsetLag": 0,
+              "isFuture": false
+            }
+          ]
+        }, {
+          "logDir": "/opt/kafka/data-2",
+          "error": null,
+          "partitions": [
+            {
+              "partition": "topic-b-4",
+              "size": 7,
+              "offsetLag": 0,
+              "isFuture": false
+            }, {
+              "partition": "topic-c-1",
+              "size": 8,
+              "offsetLag": 0,
+              "isFuture": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

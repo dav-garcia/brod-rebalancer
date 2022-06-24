@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "brokers": [
+    {
+      "id": 1,
+      "capacity": 1.5
+    }, {
+      "id": 2,
+      "capacity": 1.0
+    }, {
+      "id": 3,
+      "capacity": 1.0
+    }, {
+      "id": 4,
+      "capacity": 2.0
+    }, {
+      "id": 5,
+      "capacity": 1.5
+    }
+  ]
+}
