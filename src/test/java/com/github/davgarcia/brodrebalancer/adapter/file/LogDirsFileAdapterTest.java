@@ -32,7 +32,7 @@ class LogDirsFileAdapterTest {
                                         .partitions(List.of(
                                                 LogDirs.Partition.builder().partition("topic-a-1").size(1).build(),
                                                 LogDirs.Partition.builder().partition("topic-a-2").size(2).build(),
-                                                LogDirs.Partition.builder().partition("topic-b-1").size(3).build()))
+                                                LogDirs.Partition.builder().partition("topic-b-1").size(6).build()))
                                         .build()))
                         .build(),
                 LogDirs.Broker.builder()
@@ -41,14 +41,24 @@ class LogDirsFileAdapterTest {
                                 LogDirs.LogDir.builder()
                                         .logDir("/opt/kafka/data-1")
                                         .partitions(List.of(
-                                                LogDirs.Partition.builder().partition("topic-a-3").size(8).build(),
-                                                LogDirs.Partition.builder().partition("topic-b-2").size(7).build(),
-                                                LogDirs.Partition.builder().partition("topic-b-3").size(6).build()))
+                                                LogDirs.Partition.builder().partition("topic-b-1").size(6).build(),
+                                                LogDirs.Partition.builder().partition("topic-b-2").size(7).build()))
                                         .build(),
                                 LogDirs.LogDir.builder()
                                         .logDir("/opt/kafka/data-2")
                                         .partitions(List.of(
-                                                LogDirs.Partition.builder().partition("topic-b-4").size(5).build(),
+                                                LogDirs.Partition.builder().partition("topic-a-2").size(2).build(),
+                                                LogDirs.Partition.builder().partition("topic-c-1").size(4).build()))
+                                        .build()))
+                        .build(),
+                LogDirs.Broker.builder()
+                        .broker(3)
+                        .logDirs(List.of(
+                                LogDirs.LogDir.builder()
+                                        .logDir("/opt/kafka/data")
+                                        .partitions(List.of(
+                                                LogDirs.Partition.builder().partition("topic-a-1").size(1).build(),
+                                                LogDirs.Partition.builder().partition("topic-b-2").size(7).build(),
                                                 LogDirs.Partition.builder().partition("topic-c-1").size(4).build()))
                                         .build()))
                         .build());

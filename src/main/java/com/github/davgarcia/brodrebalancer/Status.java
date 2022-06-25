@@ -6,24 +6,51 @@ import lombok.experimental.NonFinal;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Value
 @Builder
 public class Status {
 
-    List<BrokerStatus> brokers;
+    SortedMap<Integer, BrokerStatus> brokers;
+    SortedMap<Replica, Set<Integer>> movableReplicas;
+
+    public BrokerStatus findHighestDiff() {
+        return brokers.values().stream()
+                .max(Comparator.comparingDouble(BrokerStatus::computeDiff))
+                .orElseThrow();
+    }
+
+    public double computeGap() {
+        return brokers.values().stream()
+                .mapToDouble(BrokerStatus::computeGap)
+                .sum();
+    }
+
+    public void moveReplica(int fromBrokerId, int toBrokerId, Replica replica) {
+        final var fromBroker = brokers.get(fromBrokerId);
+        final var toBroker = brokers.get(toBrokerId);
+
+        fromBroker.removeReplica(replica);
+        toBroker.addReplica(replica);
+    }
 
     public void print() {
-        System.out.println("Broker    Capacity      Current size         Goal size       Usage        Diff");
-        brokers.stream()
-                .map(b -> String.format("%6d  %10.1f  %16.0f  %16.0f  %9.1f%%  %9.1f%%",
+        System.out.println("Broker    Capacity      Current size         Goal size         Diff size       Usage");
+        brokers.values().stream()
+                .map(b -> String.format("%6d  %10.1f  %16.0f  %16.0f  %+16.0f  %9.1f%%",
                         b.getId(), b.getCapacity(), b.getCurrentSize(), b.getGoalSize(),
-                        b.getCurrentSize() / b.getGoalSize() * 100,
-                        (b.getCurrentSize() / b.getGoalSize() - 1) * 100))
+                        b.getGoalSize() - b.getCurrentSize(),
+                        b.getCurrentSize() / b.getGoalSize() * 100))
                 .forEach(System.out::println);
+        System.out.printf("Total gap: %16.0f%n", computeGap());
     }
 
     public static Status from(final BrokersConfig config, final LogDirs logDirs) {
@@ -38,7 +65,6 @@ public class Status {
                 .mapToDouble(BrokersConfig.BrokerConfig::getCapacity)
                 .sum();
 
-        final var builder = Status.builder();
         final var brokers = config.getBrokers().stream()
                 .map(b -> BrokerStatus.builder()
                         .id(b.getId())
@@ -47,9 +73,18 @@ public class Status {
                         .currentSize(currentSizes.get(b.getId()))
                         .replicasBySize(replicasBySize.get(b.getId()))
                         .build())
-                .collect(Collectors.toList());
-        builder.brokers(brokers);
-        return builder.build();
+                .collect(Collectors.toMap(BrokerStatus::getId, Function.identity(), Status::failingMerge, TreeMap::new));
+
+        final var movableReplicas = brokers.values().stream()
+                .filter(b -> b.getCurrentSize() > b.getGoalSize())
+                .flatMap(b -> b.getReplicasBySize().stream()
+                        .map(r -> Pair.of(r, b.getId())))
+                .collect(Collectors.groupingBy(Pair::getLeft, TreeMap::new, Collectors.mapping(Pair::getRight, Collectors.toSet())));
+
+        return Status.builder()
+                .brokers(brokers)
+                .movableReplicas(movableReplicas)
+                .build();
     }
 
     private static void validate(final BrokersConfig config, final LogDirs logDirs) {
@@ -64,7 +99,7 @@ public class Status {
         }
     }
 
-    private static Map<Integer, List<Replica>> computeReplicas(final LogDirs logDirs) {
+    private static Map<Integer, SortedSet<Replica>> computeReplicas(final LogDirs logDirs) {
         return logDirs.getBrokers().stream()
                 .map(b -> Pair.of(b.getBroker(), b.getLogDirs().stream()
                         .flatMap(l -> l.getPartitions().stream())
@@ -72,8 +107,7 @@ public class Status {
                                 .partition(p.getPartition())
                                 .size(p.getSize())
                                 .build())
-                        .sorted(Comparator.comparingDouble(Replica::getSize))
-                        .collect(Collectors.toList())))
+                        .collect(Collectors.toCollection(TreeSet::new))))
                 .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
     }
 
@@ -90,6 +124,10 @@ public class Status {
         return totalSize * capacity / totalCapacity;
     }
 
+    private static <T> T failingMerge(T dummy1, T dummy2) {
+        throw new BrodRebalancerException("Won't merge duplicate keys");
+    }
+
     @Value
     @Builder
     public static class BrokerStatus {
@@ -99,14 +137,45 @@ public class Status {
         double goalSize;
         @NonFinal
         double currentSize;
-        List<Replica> replicasBySize;
+        SortedSet<Replica> replicasBySize;
+
+        public void addReplica(final Replica replica) {
+            if (replicasBySize.contains(replica)) {
+                throw new BrodRebalancerException(String.format("Broker %d already contains replica: %s", id, replica.getPartition()));
+            }
+
+            currentSize += replica.getSize();
+            replicasBySize.add(replica);
+        }
+
+        public void removeReplica(final Replica replica) {
+            if (!replicasBySize.contains(replica)) {
+                throw new BrodRebalancerException(String.format("Broker %d does not contain replica: %s", id, replica.getPartition()));
+            }
+
+            currentSize -= replica.getSize();
+            replicasBySize.remove(replica);
+        }
+
+        public double computeDiff() {
+            return goalSize - currentSize;
+        }
+
+        public double computeGap() {
+            return Math.abs(goalSize - currentSize);
+        }
     }
 
     @Value
     @Builder
-    public static class Replica {
+    public static class Replica implements Comparable<Replica> {
 
         String partition;
         double size;
+
+        @Override
+        public int compareTo(final Replica other) {
+            return -Double.compare(size, other.size);
+        }
     }
 }
