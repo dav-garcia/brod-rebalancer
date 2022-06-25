@@ -7,7 +7,7 @@ import java.util.List;
 
 @Value
 @Builder
-public class PartitionsReassignments {
+public class Reassignments {
 
     int version;
     List<Partition> partitions;

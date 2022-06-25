@@ -10,23 +10,23 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ConfigurationLoaderTest {
+class BrokersConfigLoaderTest {
 
-    private final ConfigurationLoader sut = new ConfigurationLoader();
+    private final BrokersConfigLoader sut = new BrokersConfigLoader();
 
     @Test
     void givenValidConfigThenLoadIt() throws URISyntaxException {
-        final var path = Path.of(getClass().getResource("/valid-config.json").toURI());
+        final var path = Path.of(getClass().getResource("/valid-brokers-config.json").toURI());
 
         final var result = sut.loadFromPath(path);
 
         assertThat(result.getVersion()).isEqualTo(1);
         assertThat(result.getBrokers()).containsExactly(
-                new Configuration.BrokerConfiguration(1, 1.5),
-                new Configuration.BrokerConfiguration(2, 1.0),
-                new Configuration.BrokerConfiguration(3, 1.0),
-                new Configuration.BrokerConfiguration(4, 2.0),
-                new Configuration.BrokerConfiguration(5, 1.5));
+                new BrokersConfig.BrokerConfig(1, 1.5),
+                new BrokersConfig.BrokerConfig(2, 1.0),
+                new BrokersConfig.BrokerConfig(3, 1.0),
+                new BrokersConfig.BrokerConfig(4, 2.0),
+                new BrokersConfig.BrokerConfig(5, 1.5));
     }
 
     @ParameterizedTest

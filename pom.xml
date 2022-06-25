@@ -14,6 +14,7 @@
 
         <lombok.version>1.18.24</lombok.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
         <jackson.version>2.13.3</jackson.version>
         <hibernate-validator.version>7.0.4.Final</hibernate-validator.version>
         <jakarta-el.version>4.0.1</jakarta-el.version>
@@ -41,6 +42,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons-collections4.version}</version>
         </dependency>
 
         <dependency>

@@ -10,21 +10,21 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
-public class ConfigurationLoader {
+public class BrokersConfigLoader {
 
     private final ObjectMapper objectMapper;
     private final Validator validator;
 
-    public ConfigurationLoader() {
+    public BrokersConfigLoader() {
         objectMapper = new ObjectMapper();
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             validator = factory.getValidator();
         }
     }
 
-    public Configuration loadFromPath(final Path path) {
+    public BrokersConfig loadFromPath(final Path path) {
         try {
-            final var result = objectMapper.readValue(path.toFile(), Configuration.class);
+            final var result = objectMapper.readValue(path.toFile(), BrokersConfig.class);
             final var violations = validator.validate(result);
             if (!violations.isEmpty()) {
                 final var errors = violations.stream()

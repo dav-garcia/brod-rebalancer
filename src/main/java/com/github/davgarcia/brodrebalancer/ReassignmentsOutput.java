@@ -1,8 +1,8 @@
 package com.github.davgarcia.brodrebalancer;
 
-public interface LogDirsInput<T> {
+public interface ReassignmentsOutput<T> {
 
     String getName();
     T getCliOptions();
-    LogDirs load();
+    void save(final Reassignments reassignments);
 }

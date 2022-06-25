@@ -2,7 +2,7 @@ package com.github.davgarcia.brodrebalancer.adapter.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
-import com.github.davgarcia.brodrebalancer.PartitionsReassignments;
+import com.github.davgarcia.brodrebalancer.Reassignments;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,16 +12,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ReassignPartitionsFileAdapterTest {
+class ReassignmentsFileAdapterTest {
 
-    private final ReassignPartitionsFileAdapter sut = new ReassignPartitionsFileAdapter();
+    private final ReassignmentsFileAdapter sut = new ReassignmentsFileAdapter();
 
     @Test
     void givenPartitionReassignmentThenSaveIt() throws IOException {
         final var path = File.createTempFile("test", ".json").getPath();
-        final var reassignments = PartitionsReassignments.builder()
+        final var reassignments = Reassignments.builder()
                 .version(1)
-                .partitions(List.of(PartitionsReassignments.Partition.builder()
+                .partitions(List.of(Reassignments.Partition.builder()
                                 .topic("topic-x")
                                 .partition(1)
                                 .replicas(List.of(1, 2, 3))
@@ -31,7 +31,7 @@ class ReassignPartitionsFileAdapterTest {
         sut.getCliOptions().setOutputPath(path);
         sut.save(reassignments);
 
-        final var result = new ObjectMapper().readValue(new File(path), PartitionsReassignments.class);
+        final var result = new ObjectMapper().readValue(new File(path), Reassignments.class);
         assertThat(result).isEqualTo(reassignments);
     }
 
@@ -40,6 +40,6 @@ class ReassignPartitionsFileAdapterTest {
         sut.getCliOptions().setOutputPath(null);
 
         Assertions.assertThrows(BrodRebalancerException.class,
-                () -> sut.save(PartitionsReassignments.builder().build()));
+                () -> sut.save(Reassignments.builder().build()));
     }
 }

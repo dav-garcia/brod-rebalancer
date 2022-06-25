@@ -8,24 +8,21 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Value;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Value
 @Builder
-public class Configuration {
+public class BrokersConfig {
 
     @Min(1)
     @Max(1)
     int version;
     @NotEmpty
-    List<@Valid BrokerConfiguration> brokers;
-    Map<String, String> options = new HashMap<>();
+    List<@Valid BrokerConfig> brokers;
 
     @Value
     @Builder
-    public static class BrokerConfiguration {
+    public static class BrokerConfig {
 
         @Min(0)
         int id;

@@ -1,6 +1,8 @@
 package com.github.davgarcia.brodrebalancer;
 
-public class Rebalancer {
+public interface Rebalancer<T> {
 
-
+    String getName();
+    T getCliOptions();
+    Reassignments rebalance(final BrokersConfig config, final LogDirs logDirs);
 }
