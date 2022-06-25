@@ -37,6 +37,7 @@ class BrokersConfigLoaderTest {
     })
     void givenInvalidConfigThenFail(final String stringPath) throws URISyntaxException {
         final var path = Path.of(getClass().getResource(stringPath).toURI());
+
         Assertions.assertThrows(BrodRebalancerException.class, () -> sut.loadFromPath(path));
     }
 }

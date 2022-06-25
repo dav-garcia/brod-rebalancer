@@ -41,15 +41,15 @@ class LogDirsFileAdapterTest {
                                 LogDirs.LogDir.builder()
                                         .logDir("/opt/kafka/data-1")
                                         .partitions(List.of(
-                                                LogDirs.Partition.builder().partition("topic-a-3").size(4).build(),
-                                                LogDirs.Partition.builder().partition("topic-b-2").size(5).build(),
+                                                LogDirs.Partition.builder().partition("topic-a-3").size(8).build(),
+                                                LogDirs.Partition.builder().partition("topic-b-2").size(7).build(),
                                                 LogDirs.Partition.builder().partition("topic-b-3").size(6).build()))
                                         .build(),
                                 LogDirs.LogDir.builder()
                                         .logDir("/opt/kafka/data-2")
                                         .partitions(List.of(
-                                                LogDirs.Partition.builder().partition("topic-b-4").size(7).build(),
-                                                LogDirs.Partition.builder().partition("topic-c-1").size(8).build()))
+                                                LogDirs.Partition.builder().partition("topic-b-4").size(5).build(),
+                                                LogDirs.Partition.builder().partition("topic-c-1").size(4).build()))
                                         .build()))
                         .build());
     }

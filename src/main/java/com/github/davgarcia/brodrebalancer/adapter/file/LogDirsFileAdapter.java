@@ -9,7 +9,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -63,7 +62,7 @@ public class LogDirsFileAdapter implements LogDirsInput<LogDirsFileAdapter.CliOp
     }
 
     @Getter
-    @Setter(AccessLevel.PACKAGE) // For testing
+    @Setter // For testing
     public static class CliOptions {
 
         @Parameter(names = "--input-path",

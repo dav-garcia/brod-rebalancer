@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import com.github.davgarcia.brodrebalancer.Reassignments;
 import com.github.davgarcia.brodrebalancer.ReassignmentsOutput;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,7 +46,7 @@ public class ReassignmentsFileAdapter implements ReassignmentsOutput<Reassignmen
     }
 
     @Getter
-    @Setter(AccessLevel.PACKAGE) // For testing.
+    @Setter // For testing.
     public static class CliOptions {
 
         @Parameter(names = "--output-path",

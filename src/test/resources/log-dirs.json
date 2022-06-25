@@ -36,12 +36,12 @@
           "partitions": [
             {
               "partition": "topic-a-3",
-              "size": 4,
+              "size": 8,
               "offsetLag": 0,
               "isFuture": false
             }, {
               "partition": "topic-b-2",
-              "size": 5,
+              "size": 7,
               "offsetLag": 0,
               "isFuture": false
             }, {
@@ -57,12 +57,12 @@
           "partitions": [
             {
               "partition": "topic-b-4",
-              "size": 7,
+              "size": 5,
               "offsetLag": 0,
               "isFuture": false
             }, {
               "partition": "topic-c-1",
-              "size": 8,
+              "size": 4,
               "offsetLag": 0,
               "isFuture": false
             }

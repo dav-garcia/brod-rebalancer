@@ -2,6 +2,8 @@ package com.github.davgarcia.brodrebalancer;
 
 import com.beust.jcommander.JCommander;
 
+import java.util.List;
+
 public class CliOptionsParser {
 
     private final JCommander parser;
@@ -26,6 +28,14 @@ public class CliOptionsParser {
         registry.getAllRebalancers().stream()
                 .map(Rebalancer::getCliOptions)
                 .forEach(parser::addObject);
+    }
+
+    public void clearCliOptions() {
+        parser.getObjects().clear();
+    }
+
+    public List<Object> getCliOptions() {
+        return parser.getObjects();
     }
 
     public void parse(final String[] args) {
