@@ -1,6 +1,7 @@
-package com.github.davgarcia.brodrebalancer;
+package com.github.davgarcia.brodrebalancer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

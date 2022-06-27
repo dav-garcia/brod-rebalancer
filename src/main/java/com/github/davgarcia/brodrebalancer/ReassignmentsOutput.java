@@ -1,8 +1,8 @@
 package com.github.davgarcia.brodrebalancer;
 
-public interface ReassignmentsOutput<T> {
+import com.github.davgarcia.brodrebalancer.config.Registered;
 
-    String getName();
-    T getCliOptions();
+public interface ReassignmentsOutput<T> extends Registered<T> {
+
     void save(final Reassignments reassignments);
 }

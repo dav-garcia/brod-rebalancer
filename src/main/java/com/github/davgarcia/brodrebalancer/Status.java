@@ -1,17 +1,16 @@
 package com.github.davgarcia.brodrebalancer;
 
+import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,27 +18,40 @@ import java.util.stream.Collectors;
 @Builder
 public class Status {
 
-    SortedMap<Integer, BrokerStatus> brokers;
-    SortedMap<Replica, Set<Integer>> movableReplicas;
+    SortedMap<Integer, Broker> brokers;
 
-    public BrokerStatus findHighestDiff() {
+    public Broker getBroker(final int id) {
+        return brokers.get(id);
+    }
+
+    public Set<Broker> getBrokers(final Set<Integer> ids) {
         return brokers.values().stream()
-                .max(Comparator.comparingDouble(BrokerStatus::computeDiff))
-                .orElseThrow();
+                .filter(b -> ids.contains(b.getId()))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Broker> findDestinations(final String partition) {
+        return brokers.values().stream()
+                .filter(b -> !b.hasPartition(partition))
+                .collect(Collectors.toSet());
+    }
+
+    public void move(final Broker srcBroker, final Broker dstBroker, final String partition, final double size) {
+        srcBroker.removePartition(partition, size);
+        dstBroker.addPartition(partition, size);
+    }
+
+    public double computeMaxDiff() {
+        return brokers.values().stream()
+                .mapToDouble(Broker::computeDiff)
+                .max()
+                .orElse(0.0);
     }
 
     public double computeGap() {
         return brokers.values().stream()
-                .mapToDouble(BrokerStatus::computeGap)
+                .mapToDouble(Broker::computeGap)
                 .sum();
-    }
-
-    public void moveReplica(int fromBrokerId, int toBrokerId, Replica replica) {
-        final var fromBroker = brokers.get(fromBrokerId);
-        final var toBroker = brokers.get(toBrokerId);
-
-        fromBroker.removeReplica(replica);
-        toBroker.addReplica(replica);
     }
 
     public void print() {
@@ -48,7 +60,7 @@ public class Status {
                 .map(b -> String.format("%6d  %10.1f  %16.0f  %16.0f  %+16.0f  %9.1f%%",
                         b.getId(), b.getCapacity(), b.getCurrentSize(), b.getGoalSize(),
                         b.getGoalSize() - b.getCurrentSize(),
-                        b.getCurrentSize() / b.getGoalSize() * 100))
+                        b.getCurrentSize() / b.getGoalSize() * 100.0))
                 .forEach(System.out::println);
         System.out.printf("Total gap: %16.0f%n", computeGap());
     }
@@ -56,7 +68,7 @@ public class Status {
     public static Status from(final BrokersConfig config, final LogDirs logDirs) {
         validate(config, logDirs);
 
-        final var replicasBySize = computeReplicas(logDirs);
+        final var partitions = computePartitions(logDirs);
         final var currentSizes = computeCurrentSizes(logDirs);
         final var totalSize = currentSizes.values().stream()
                 .mapToDouble(Double::doubleValue)
@@ -66,24 +78,17 @@ public class Status {
                 .sum();
 
         final var brokers = config.getBrokers().stream()
-                .map(b -> BrokerStatus.builder()
+                .map(b -> Broker.builder()
                         .id(b.getId())
                         .capacity(b.getCapacity())
                         .goalSize(computeGoalSize(totalSize, totalCapacity, b.getCapacity()))
                         .currentSize(currentSizes.get(b.getId()))
-                        .replicasBySize(replicasBySize.get(b.getId()))
+                        .partitions(partitions.get(b.getId()))
                         .build())
-                .collect(Collectors.toMap(BrokerStatus::getId, Function.identity(), Status::failingMerge, TreeMap::new));
-
-        final var movableReplicas = brokers.values().stream()
-                .filter(b -> b.getCurrentSize() > b.getGoalSize())
-                .flatMap(b -> b.getReplicasBySize().stream()
-                        .map(r -> Pair.of(r, b.getId())))
-                .collect(Collectors.groupingBy(Pair::getLeft, TreeMap::new, Collectors.mapping(Pair::getRight, Collectors.toSet())));
+                .collect(Collectors.toMap(Broker::getId, Function.identity(), Status::failingMerge, TreeMap::new));
 
         return Status.builder()
                 .brokers(brokers)
-                .movableReplicas(movableReplicas)
                 .build();
     }
 
@@ -99,15 +104,12 @@ public class Status {
         }
     }
 
-    private static Map<Integer, SortedSet<Replica>> computeReplicas(final LogDirs logDirs) {
+    private static Map<Integer, Set<String>> computePartitions(final LogDirs logDirs) {
         return logDirs.getBrokers().stream()
                 .map(b -> Pair.of(b.getBroker(), b.getLogDirs().stream()
                         .flatMap(l -> l.getPartitions().stream())
-                        .map(p -> Replica.builder()
-                                .partition(p.getPartition())
-                                .size(p.getSize())
-                                .build())
-                        .collect(Collectors.toCollection(TreeSet::new))))
+                        .map(LogDirs.Partition::getPartition)
+                        .collect(Collectors.toSet())))
                 .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
     }
 
@@ -127,34 +129,45 @@ public class Status {
     private static <T> T failingMerge(T dummy1, T dummy2) {
         throw new BrodRebalancerException("Won't merge duplicate keys");
     }
-
     @Value
     @Builder
-    public static class BrokerStatus {
+    public static class Broker {
 
         int id;
         double capacity;
         double goalSize;
         @NonFinal
         double currentSize;
-        SortedSet<Replica> replicasBySize;
+        Set<String> partitions;
 
-        public void addReplica(final Replica replica) {
-            if (replicasBySize.contains(replica)) {
-                throw new BrodRebalancerException(String.format("Broker %d already contains replica: %s", id, replica.getPartition()));
-            }
-
-            currentSize += replica.getSize();
-            replicasBySize.add(replica);
+        public boolean isFree() {
+            return goalSize > currentSize;
         }
 
-        public void removeReplica(final Replica replica) {
-            if (!replicasBySize.contains(replica)) {
-                throw new BrodRebalancerException(String.format("Broker %d does not contain replica: %s", id, replica.getPartition()));
+        public boolean isFreeAfterAdding(final double size) {
+            return goalSize > currentSize + size;
+        }
+
+        public boolean hasPartition(final String partition) {
+            return partitions.contains(partition);
+        }
+
+        public void addPartition(final String partition, final double size) {
+            if (partitions.contains(partition)) {
+                throw new BrodRebalancerException(String.format("Broker %d already contains partition: %s", id, partition));
             }
 
-            currentSize -= replica.getSize();
-            replicasBySize.remove(replica);
+            currentSize += size;
+            partitions.add(partition);
+        }
+
+        public void removePartition(final String partition, final double size) {
+            if (!partitions.contains(partition)) {
+                throw new BrodRebalancerException(String.format("Broker %d does not contain partition: %s", id, partition));
+            }
+
+            currentSize -= size;
+            partitions.remove(partition);
         }
 
         public double computeDiff() {
@@ -164,18 +177,17 @@ public class Status {
         public double computeGap() {
             return Math.abs(goalSize - currentSize);
         }
-    }
 
-    @Value
-    @Builder
-    public static class Replica implements Comparable<Replica> {
-
-        String partition;
-        double size;
-
-        @Override
-        public int compareTo(final Replica other) {
-            return -Double.compare(size, other.size);
+        public static Broker from(final Broker broker) {
+            return Broker.builder()
+                    .id(broker.id)
+                    .capacity(broker.capacity)
+                    .goalSize(broker.goalSize)
+                    .currentSize(broker.currentSize)
+                    .partitions(new HashSet<>(broker.partitions))
+                    .build();
         }
+
+        // TODO: Implement id-based equals & hashcode.
     }
 }

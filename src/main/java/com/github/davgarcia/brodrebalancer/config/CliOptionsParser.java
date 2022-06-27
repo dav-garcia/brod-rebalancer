@@ -1,4 +1,4 @@
-package com.github.davgarcia.brodrebalancer;
+package com.github.davgarcia.brodrebalancer.config;
 
 import com.beust.jcommander.JCommander;
 
@@ -7,11 +7,13 @@ import java.util.List;
 public class CliOptionsParser {
 
     private final JCommander parser;
+    private final String header;
 
-    public CliOptionsParser(final String name) {
+    public CliOptionsParser(final String name, final String header) {
         parser = JCommander.newBuilder()
                 .programName(name)
                 .build();
+        this.header = header;
     }
 
     public void addCliOptions(final Object cliOptions) {
@@ -19,14 +21,8 @@ public class CliOptionsParser {
     }
 
     public void addAllCliOptions(final Registry registry) {
-        registry.getAllLogDirsInputs().stream()
-                .map(LogDirsInput::getCliOptions)
-                .forEach(parser::addObject);
-        registry.getAllReassignmentsOutputs().stream()
-                .map(ReassignmentsOutput::getCliOptions)
-                .forEach(parser::addObject);
-        registry.getAllRebalancers().stream()
-                .map(Rebalancer::getCliOptions)
+        registry.getAllRegistered().stream()
+                .map(Registered::getCliOptions)
                 .forEach(parser::addObject);
     }
 
@@ -43,6 +39,7 @@ public class CliOptionsParser {
     }
 
     public void printUsage() {
+        System.out.println(header);
         parser.usage();
     }
 }

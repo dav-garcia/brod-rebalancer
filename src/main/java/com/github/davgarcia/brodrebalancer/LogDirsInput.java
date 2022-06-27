@@ -1,8 +1,8 @@
 package com.github.davgarcia.brodrebalancer;
 
-public interface LogDirsInput<T> {
+import com.github.davgarcia.brodrebalancer.config.Registered;
 
-    String getName();
-    T getCliOptions();
+public interface LogDirsInput<T> extends Registered<T> {
+
     LogDirs load();
 }

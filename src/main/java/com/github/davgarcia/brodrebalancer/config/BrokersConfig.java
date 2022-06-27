@@ -1,4 +1,4 @@
-package com.github.davgarcia.brodrebalancer;
+package com.github.davgarcia.brodrebalancer.config;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;

@@ -1,5 +1,6 @@
-package com.github.davgarcia.brodrebalancer;
+package com.github.davgarcia.brodrebalancer.config;
 
+import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

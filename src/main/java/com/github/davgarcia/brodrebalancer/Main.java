@@ -1,6 +1,9 @@
 package com.github.davgarcia.brodrebalancer;
 
 import com.beust.jcommander.Parameter;
+import com.github.davgarcia.brodrebalancer.config.BrokersConfigLoader;
+import com.github.davgarcia.brodrebalancer.config.CliOptionsParser;
+import com.github.davgarcia.brodrebalancer.config.Registry;
 import lombok.Getter;
 
 import java.nio.file.Path;
@@ -14,14 +17,15 @@ public class Main {
     public static void main(String[] args) {
         final var registry = new Registry();
         final var cliOptions = new CliOptions();
-        final var optionsParser = new CliOptionsParser("brod-rebalancer");
 
+        final var optionsParser = new CliOptionsParser("brod-rebalancer", HEADER);
         optionsParser.addAllCliOptions(registry);
         optionsParser.addCliOptions(cliOptions);
         optionsParser.parse(args);
         if (cliOptions.isHelp()) {
-            System.out.println(HEADER);
             optionsParser.printUsage();
+            System.out.println();
+            registry.printUsage();
             return;
         }
 
@@ -29,6 +33,10 @@ public class Main {
         final var input = registry.getLogDirsInput(cliOptions.getInput());
         final var output = registry.getReassignmentsOutput(cliOptions.getOutput());
         final var rebalancer = registry.getRebalancer(cliOptions.getRebalancer());
+        final var srcBrokerStrategy = registry.getSourceBrokerStrategy(cliOptions.getSrcBrokerStrategy());
+        final var dstBrokerStrategy = registry.getDestinationBrokerStrategy(cliOptions.getDstBrokerStrategy());
+
+        rebalancer.setBrokerStrategies(srcBrokerStrategy, dstBrokerStrategy);
 
         final var logDirs = input.load();
         final var reassignments = rebalancer.rebalance(config, logDirs);
@@ -51,6 +59,12 @@ public class Main {
         private String output = "file";
 
         @Parameter(names = "--rebalancer", description = "Type of rebalancer algorithm.")
-        private String rebalancer = "simple";
+        private String rebalancer = "ffd";
+
+        @Parameter(names = "--src-broker-strategy", description = "How to choose the source broker holding the replica to be moved.")
+        public String srcBrokerStrategy = "random";
+
+        @Parameter(names = "--dst-broker-strategy", description = "How to choose the destination broker where the replica will be moved.")
+        public String dstBrokerStrategy = "random";
     }
 }
