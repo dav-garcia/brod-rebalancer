@@ -20,6 +20,10 @@ import java.util.stream.Collectors;
 public class Status {
 
     SortedMap<Integer, Broker> brokers;
+    @NonFinal
+    int cumulativeNumMoves;
+    @NonFinal
+    double cumulativeSizeMoved;
 
     public Broker getBroker(final int id) {
         return brokers.get(id);
@@ -41,6 +45,9 @@ public class Status {
     public void move(final Broker srcBroker, final Broker dstBroker, final String partition, final double size) {
         srcBroker.removePartition(partition, size);
         dstBroker.addPartition(partition, size);
+
+        cumulativeNumMoves++;
+        cumulativeSizeMoved += size;
     }
 
     public double computeMaxDiff() {
@@ -56,7 +63,7 @@ public class Status {
                 .sum();
     }
 
-    public void print() {
+    public void printFull() {
         System.out.println("____________________________________________________________________________________");
         System.out.println("Broker    Capacity      Current size         Goal size         Diff size       Usage");
         brokers.values().stream()
@@ -65,7 +72,12 @@ public class Status {
                         b.getGoalSize() - b.getCurrentSize(),
                         b.getCurrentSize() / b.getGoalSize() * 100.0))
                 .forEach(System.out::println);
-        System.out.printf("Total gap: %16.0f%n", computeGap());
+        System.out.printf("Total gap: %.0f%n", computeGap());
+    }
+
+    public void printSummary() {
+        System.out.printf("%nTotal gap: %.0f%nNumber of movements: %d%nAmount moved: %.0f%n",
+                computeGap(), cumulativeNumMoves, cumulativeSizeMoved);
     }
 
     public static Status from(final BrokersConfig config, final LogDirs logDirs) {

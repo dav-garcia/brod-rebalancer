@@ -43,7 +43,7 @@ public class FirstFitDecreasingRebalancer implements Rebalancer<Object> {
         final var status = Status.from(config, logDirs);
         final var movablePartitions = MovablePartitions.from(logDirs, status);
 
-        status.print();
+        status.printFull();
 
         MovablePartitions.Partition partition;
         do {
@@ -60,10 +60,11 @@ public class FirstFitDecreasingRebalancer implements Rebalancer<Object> {
                 }
                 if (srcBroker != null && dstBroker != null) {
                     status.move(srcBroker, dstBroker, partition.getId(), partition.getSize());
-                    status.print();
+                    status.printFull();
                 }
             }
         } while (partition != null);
+        status.printSummary();
 
         return Reassignments.from(status);
     }
