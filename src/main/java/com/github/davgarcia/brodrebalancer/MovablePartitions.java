@@ -6,7 +6,6 @@ import lombok.Value;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -17,10 +16,11 @@ public class MovablePartitions {
 
     SortedSet<Partition> partitions;
 
-    public Optional<Partition> findLargest(final double maxSize) {
+    public Partition findLargest(final double maxSize) {
         return partitions.stream()
                 .filter(p -> p.getSize() <= maxSize)
-                .findFirst();
+                .findFirst()
+                .orElse(null);
     }
 
     public void remove(final Partition partition, final int replica) {
@@ -35,7 +35,7 @@ public class MovablePartitions {
         final var partitions = new HashMap<String, Partition>();
 
         logDirs.getBrokers().stream()
-                .filter(b -> !status.getBroker(b.getBroker()).isFree())
+                .filter(b -> status.getBroker(b.getBroker()).isOverloaded())
                 .forEach(b -> b.getLogDirs().stream()
                         .flatMap(l -> l.getPartitions().stream())
                         .forEach(p -> registerPartition(partitions, b, p)));

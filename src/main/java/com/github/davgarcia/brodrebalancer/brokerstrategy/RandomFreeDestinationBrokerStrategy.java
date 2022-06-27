@@ -1,23 +1,24 @@
 package com.github.davgarcia.brodrebalancer.brokerstrategy;
 
+import com.github.davgarcia.brodrebalancer.DestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.MovablePartitions;
-import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.Status;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
-public class RandomSourceBrokerStrategy implements SourceBrokerStrategy<Object> {
+public class RandomFreeDestinationBrokerStrategy implements DestinationBrokerStrategy<Object> {
 
     private final Random random;
 
-    public RandomSourceBrokerStrategy() {
+    public RandomFreeDestinationBrokerStrategy() {
         random = new Random();
     }
 
     @Override
     public String getName() {
-        return "random";
+        return "random-free";
     }
 
     @Override
@@ -27,6 +28,9 @@ public class RandomSourceBrokerStrategy implements SourceBrokerStrategy<Object> 
 
     @Override
     public Status.Broker select(final MovablePartitions.Partition partition, final List<Status.Broker> brokers) {
-        return brokers.isEmpty() ? null : brokers.get(random.nextInt(brokers.size()));
+        final var freeBrokers = brokers.stream()
+                .filter(b -> !b.isOverloadedAfterAdding(partition.getSize()))
+                .collect(Collectors.toList());
+        return freeBrokers.isEmpty() ? null : freeBrokers.get(random.nextInt(freeBrokers.size()));
     }
 }

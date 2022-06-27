@@ -8,8 +8,6 @@ import com.github.davgarcia.brodrebalancer.Rebalancer;
 import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.Status;
 import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Rebalancer based on the First-Fit-Decreasing (FFD) algorithm for the
@@ -45,34 +43,28 @@ public class FirstFitDecreasingRebalancer implements Rebalancer<Object> {
         final var status = Status.from(config, logDirs);
         final var movablePartitions = MovablePartitions.from(logDirs, status);
 
-        double gapBefore;
-        double gapAfter = status.computeGap();
+        status.print();
+
+        MovablePartitions.Partition partition;
         do {
-            gapBefore = gapAfter;
-
             final var maxDiff = status.computeMaxDiff();
-            if (maxDiff > 0.0) {
-                movablePartitions.findLargest(maxDiff).ifPresent(p -> {
-                    final var srcBrokers = status.getBrokers(p.getReplicas());
-                    final var srcBroker = srcBrokerStrategy.select(p, srcBrokers);
-                    final var dstBrokers = status.findDestinations(p.getId());
-                    final var dstBroker = dstBrokerStrategy.select(p, dstBrokers);
+            partition = maxDiff > 0.0 ? movablePartitions.findLargest(maxDiff) : null;
+            if (partition != null) {
+                final var srcBrokers = status.getBrokers(partition.getReplicas());
+                final var srcBroker = srcBrokerStrategy.select(partition, srcBrokers);
+                final var dstBrokers = status.findDestinations(partition.getId());
+                final var dstBroker = dstBrokerStrategy.select(partition, dstBrokers);
 
-                    status.move(srcBroker, dstBroker, p.getId(), p.getSize());
-                    movablePartitions.remove(p, srcBroker.getId());
-                });
+                if (srcBroker != null) {
+                    movablePartitions.remove(partition, srcBroker.getId());
+                }
+                if (srcBroker != null && dstBroker != null) {
+                    status.move(srcBroker, dstBroker, partition.getId(), partition.getSize());
+                    status.print();
+                }
             }
-
-            gapAfter = status.computeGap();
-        } while (gapBefore > gapAfter);
+        } while (partition != null);
 
         return Reassignments.from(status);
-    }
-
-    @Getter
-    @Setter // For testing
-    public static class CliOptions {
-
-        // Empty.
     }
 }

@@ -4,14 +4,15 @@ import com.github.davgarcia.brodrebalancer.DestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.MovablePartitions;
 import com.github.davgarcia.brodrebalancer.Status;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Random;
 
 public class RandomDestinationBrokerStrategy implements DestinationBrokerStrategy<Object> {
 
-    @Override
-    public Status.Broker select(final MovablePartitions.Partition partition, final Set<Status.Broker> brokers) {
-        // TODO: Implement...
-        return null;
+    private final Random random;
+
+    public RandomDestinationBrokerStrategy() {
+        random = new Random();
     }
 
     @Override
@@ -22,5 +23,10 @@ public class RandomDestinationBrokerStrategy implements DestinationBrokerStrateg
     @Override
     public Object getCliOptions() {
         return new Object();
+    }
+
+    @Override
+    public Status.Broker select(final MovablePartitions.Partition partition, final List<Status.Broker> brokers) {
+        return brokers.isEmpty() ? null : brokers.get(random.nextInt(brokers.size()));
     }
 }

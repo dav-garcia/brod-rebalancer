@@ -106,7 +106,7 @@ class StatusTest {
     void givenPartitionThenFindDestinations() {
         final var result = SUT.findDestinations("test-1");
 
-        assertThat(result).containsExactlyInAnyOrder(BROKER_3, BROKER_4);
+        assertThat(result).containsExactlyInAnyOrder(BROKER_3);
     }
 
     @Test

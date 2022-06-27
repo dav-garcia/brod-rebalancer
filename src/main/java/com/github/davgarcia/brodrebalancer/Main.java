@@ -64,6 +64,6 @@ public class Main {
         public String srcBrokerStrategy = "random";
 
         @Parameter(names = "--dst-broker-strategy", description = "How to choose the destination broker where the replica will be moved.")
-        public String dstBrokerStrategy = "random";
+        public String dstBrokerStrategy = "random-free";
     }
 }

@@ -38,7 +38,7 @@ class MovablePartitionsTest {
 
         final var result = sut.findLargest(2.0);
 
-        assertThat(result.orElseThrow()).isEqualTo(partition2);
+        assertThat(result).isEqualTo(partition2);
     }
 
     @Test
@@ -49,6 +49,6 @@ class MovablePartitionsTest {
 
         final var result = sut.findLargest(10.0);
 
-        assertThat(result).isNotPresent();
+        assertThat(result).isNull();
     }
 }

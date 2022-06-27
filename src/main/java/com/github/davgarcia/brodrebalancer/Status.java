@@ -7,6 +7,7 @@ import lombok.experimental.NonFinal;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -24,16 +25,17 @@ public class Status {
         return brokers.get(id);
     }
 
-    public Set<Broker> getBrokers(final Set<Integer> ids) {
+    public List<Broker> getBrokers(final Set<Integer> ids) {
         return brokers.values().stream()
                 .filter(b -> ids.contains(b.getId()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public Set<Broker> findDestinations(final String partition) {
+    public List<Broker> findDestinations(final String partition) {
         return brokers.values().stream()
+                .filter(Broker::isFree)
                 .filter(b -> !b.hasPartition(partition))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     public void move(final Broker srcBroker, final Broker dstBroker, final String partition, final double size) {
@@ -55,6 +57,7 @@ public class Status {
     }
 
     public void print() {
+        System.out.println("____________________________________________________________________________________");
         System.out.println("Broker    Capacity      Current size         Goal size         Diff size       Usage");
         brokers.values().stream()
                 .map(b -> String.format("%6d  %10.1f  %16.0f  %16.0f  %+16.0f  %9.1f%%",
@@ -146,6 +149,14 @@ public class Status {
 
         public boolean isFreeAfterAdding(final double size) {
             return goalSize > currentSize + size;
+        }
+
+        public boolean isOverloaded() {
+            return goalSize < currentSize;
+        }
+
+        public boolean isOverloadedAfterAdding(final double size) {
+            return goalSize < currentSize + size;
         }
 
         public boolean hasPartition(final String partition) {
