@@ -24,7 +24,6 @@ public class Main {
         optionsParser.parse(args);
         if (cliOptions.isHelp()) {
             optionsParser.printUsage();
-            System.out.println();
             registry.printUsage();
             return;
         }

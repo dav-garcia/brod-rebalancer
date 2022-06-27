@@ -68,11 +68,11 @@ public class Registry {
     }
 
     public void printUsage() {
-        System.out.println(format("Inputs", logDirsInputs));
-        System.out.println(format("Outputs", reassignmentsOutputs));
-        System.out.println(format("Rebalancers", rebalancers));
-        System.out.println(format("Source broker strategies", srcBrokerStrategies));
-        System.out.println(format("Destination broker strategies", dstBrokerStrategies));
+        System.out.println(format("  Inputs", logDirsInputs));
+        System.out.println(format("  Outputs", reassignmentsOutputs));
+        System.out.println(format("  Rebalancers", rebalancers));
+        System.out.println(format("  Source broker strategies", srcBrokerStrategies));
+        System.out.println(format("  Destination broker strategies", dstBrokerStrategies));
     }
 
     private <T extends Registered<?>> String format(final String title, final List<T> list) {
