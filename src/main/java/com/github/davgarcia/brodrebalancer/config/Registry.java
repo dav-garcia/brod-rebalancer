@@ -3,6 +3,7 @@ package com.github.davgarcia.brodrebalancer.config;
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import com.github.davgarcia.brodrebalancer.DestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomDestinationBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomFreeDestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomSourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.rebalancer.FirstFitDecreasingRebalancer;
 import com.github.davgarcia.brodrebalancer.LogDirsInput;
@@ -30,7 +31,7 @@ public class Registry {
         reassignmentsOutputs = List.of(new ReassignmentsFileAdapter());
         rebalancers = List.of(new FirstFitDecreasingRebalancer());
         srcBrokerStrategies = List.of(new RandomSourceBrokerStrategy());
-        dstBrokerStrategies = List.of(new RandomDestinationBrokerStrategy());
+        dstBrokerStrategies = List.of(new RandomFreeDestinationBrokerStrategy(), new RandomDestinationBrokerStrategy());
     }
 
     public List<Registered<?>> getAllRegistered() {

@@ -5,6 +5,7 @@ import com.github.davgarcia.brodrebalancer.config.BrokersConfigLoader;
 import com.github.davgarcia.brodrebalancer.config.CliOptionsParser;
 import com.github.davgarcia.brodrebalancer.config.Registry;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.nio.file.Path;
 
@@ -21,8 +22,14 @@ public class Main {
         final var optionsParser = new CliOptionsParser("brod-rebalancer", HEADER);
         optionsParser.addAllCliOptions(registry);
         optionsParser.addCliOptions(cliOptions);
-        optionsParser.parse(args);
-        if (cliOptions.isHelp()) {
+        try {
+            optionsParser.parse(args);
+        } catch (BrodRebalancerException e) {
+            System.out.println(e.getMessage());
+            System.out.println();
+            cliOptions.setHelp(true);
+        }
+        if (cliOptions.isHelp() ) {
             optionsParser.printUsage();
             registry.printUsage();
             return;
@@ -45,6 +52,7 @@ public class Main {
     @Getter
     public static class CliOptions {
 
+        @Setter
         @Parameter(names = "--help", help = true, description = "Print this help.")
         private boolean help = false;
 

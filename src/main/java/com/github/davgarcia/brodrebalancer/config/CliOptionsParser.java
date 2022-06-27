@@ -1,6 +1,8 @@
 package com.github.davgarcia.brodrebalancer.config;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 
 import java.util.List;
 
@@ -35,7 +37,11 @@ public class CliOptionsParser {
     }
 
     public void parse(final String[] args) {
-        parser.parse(args);
+        try {
+            parser.parse(args);
+        } catch (ParameterException e) {
+            throw new BrodRebalancerException(e);
+        }
     }
 
     public void printUsage() {
