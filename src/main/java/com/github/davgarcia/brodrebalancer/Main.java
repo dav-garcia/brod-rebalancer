@@ -71,7 +71,7 @@ public class Main {
         private String rebalancer = "ffd";
 
         @Parameter(names = "--src-broker-strategy", description = "How to choose the source broker holding the replica to be moved.")
-        public String srcBrokerStrategy = "random";
+        public String srcBrokerStrategy = "most-overloaded";
 
         @Parameter(names = "--dst-broker-strategy", description = "How to choose the destination broker where the replica will be moved.")
         public String dstBrokerStrategy = "random-free";

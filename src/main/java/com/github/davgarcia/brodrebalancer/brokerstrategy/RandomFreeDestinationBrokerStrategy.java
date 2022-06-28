@@ -28,9 +28,9 @@ public class RandomFreeDestinationBrokerStrategy implements DestinationBrokerStr
 
     @Override
     public Status.Broker select(final MovablePartitions.Partition partition, final List<Status.Broker> brokers) {
-        final var freeBrokers = brokers.stream()
+        final var filteredBrokers = brokers.stream()
                 .filter(b -> !b.isOverloadedAfterAdding(partition.getSize()))
                 .collect(Collectors.toList());
-        return freeBrokers.isEmpty() ? null : freeBrokers.get(random.nextInt(freeBrokers.size()));
+        return filteredBrokers.isEmpty() ? null : filteredBrokers.get(random.nextInt(filteredBrokers.size()));
     }
 }

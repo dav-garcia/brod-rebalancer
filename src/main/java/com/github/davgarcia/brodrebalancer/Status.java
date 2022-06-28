@@ -70,7 +70,7 @@ public class Status {
                 .map(b -> String.format("%6d  %10.1f  %16.0f  %16.0f  %+16.0f  %9.1f%%",
                         b.getId(), b.getCapacity(), b.getCurrentSize(), b.getGoalSize(),
                         b.getGoalSize() - b.getCurrentSize(),
-                        b.getCurrentSize() / b.getGoalSize() * 100.0))
+                        b.computeUsageRatio() * 100.0))
                 .forEach(System.out::println);
         System.out.printf("Total gap: %-16.0f  No of moves: %-10d  Amount moved: %-16.0f%n",
                 computeGap(), cumulativeNumMoves, cumulativeSizeMoved);
@@ -195,6 +195,10 @@ public class Status {
 
         public double computeGap() {
             return Math.abs(goalSize - currentSize);
+        }
+
+        public double computeUsageRatio() {
+            return currentSize / goalSize;
         }
 
         public static Broker from(final Broker broker) {
