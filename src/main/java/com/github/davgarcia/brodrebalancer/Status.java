@@ -63,7 +63,7 @@ public class Status {
                 .sum();
     }
 
-    public void printFull() {
+    public void print() {
         System.out.println("____________________________________________________________________________________");
         System.out.println("Broker    Capacity      Current size         Goal size         Diff size       Usage");
         brokers.values().stream()
@@ -72,11 +72,7 @@ public class Status {
                         b.getGoalSize() - b.getCurrentSize(),
                         b.getCurrentSize() / b.getGoalSize() * 100.0))
                 .forEach(System.out::println);
-        System.out.printf("Total gap: %.0f%n", computeGap());
-    }
-
-    public void printSummary() {
-        System.out.printf("%nTotal gap: %.0f%nNumber of movements: %d%nAmount moved: %.0f%n",
+        System.out.printf("Total gap: %-16.0f  No of moves: %-10d  Amount moved: %-16.0f%n",
                 computeGap(), cumulativeNumMoves, cumulativeSizeMoved);
     }
 

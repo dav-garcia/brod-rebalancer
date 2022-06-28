@@ -2,7 +2,7 @@ package com.github.davgarcia.brodrebalancer.adapter.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
-import com.github.davgarcia.brodrebalancer.Reassignments;
+import com.github.davgarcia.brodrebalancer.Assignments;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,16 +12,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ReassignmentsFileAdapterTest {
+class AssignmentsFileAdapterTest {
 
-    private final ReassignmentsFileAdapter sut = new ReassignmentsFileAdapter();
+    private final AssignmentsFileAdapter sut = new AssignmentsFileAdapter();
 
     @Test
-    void givenPartitionReassignmentThenSaveIt() throws IOException {
+    void givenPartitionAssignmentThenSaveIt() throws IOException {
         final var path = File.createTempFile("test", ".json").getPath();
-        final var reassignments = Reassignments.builder()
+        final var assignments = Assignments.builder()
                 .version(1)
-                .partitions(List.of(Reassignments.Partition.builder()
+                .partitions(List.of(Assignments.Partition.builder()
                                 .topic("topic-x")
                                 .partition(1)
                                 .replicas(List.of(1, 2, 3))
@@ -29,10 +29,10 @@ class ReassignmentsFileAdapterTest {
                 .build();
 
         sut.getCliOptions().setOutputPath(path);
-        sut.save(reassignments);
+        sut.save(assignments);
 
-        final var result = new ObjectMapper().readValue(new File(path), Reassignments.class);
-        assertThat(result).isEqualTo(reassignments);
+        final var result = new ObjectMapper().readValue(new File(path), Assignments.class);
+        assertThat(result).isEqualTo(assignments);
     }
 
     @Test
@@ -40,6 +40,6 @@ class ReassignmentsFileAdapterTest {
         sut.getCliOptions().setOutputPath(null);
 
         Assertions.assertThrows(BrodRebalancerException.class,
-                () -> sut.save(Reassignments.builder().build()));
+                () -> sut.save(Assignments.builder().build()));
     }
 }

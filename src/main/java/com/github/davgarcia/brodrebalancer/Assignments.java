@@ -11,17 +11,31 @@ import java.util.stream.Collectors;
 
 @Value
 @Builder
-public class Reassignments {
+public class Assignments {
 
     int version;
     List<Partition> partitions;
 
-    public static Reassignments from(final Status status) {
+    public static Assignments from(final LogDirs logDirs) {
+        final var rawPartitions = logDirs.getBrokers().stream()
+                .flatMap(b -> b.getLogDirs().stream()
+                        .flatMap(l -> l.getPartitions().stream()
+                                .map(p -> Pair.of(p.getPartition(), b.getBroker()))))
+                .collect(Collectors.groupingBy(Pair::getLeft, TreeMap::new,
+                        Collectors.mapping(Pair::getRight, Collectors.toList())));
+        return doBuild(rawPartitions);
+    }
+
+    public static Assignments from(final Status status) {
         final var rawPartitions = status.getBrokers().values().stream()
                 .flatMap(b -> b.getPartitions().stream()
                         .map(p -> Pair.of(p, b.getId())))
                 .collect(Collectors.groupingBy(Pair::getLeft, TreeMap::new,
                         Collectors.mapping(Pair::getRight, Collectors.toList())));
+        return doBuild(rawPartitions);
+    }
+
+    private static Assignments doBuild(final TreeMap<String, List<Integer>> rawPartitions) {
         final var partitions = rawPartitions.entrySet().stream()
                 .map(e -> Partition.builder()
                         .topic(getTopicName(e.getKey()))
@@ -30,7 +44,7 @@ public class Reassignments {
                         .build())
                 .collect(Collectors.toList());
 
-        return Reassignments.builder()
+        return Assignments.builder()
                 .version(1)
                 .partitions(partitions)
                 .build();

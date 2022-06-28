@@ -52,7 +52,7 @@ class StatusTest {
         final var logDirs = ObjectMother.newLogDirs();
 
         final var result = Status.from(config, logDirs);
-        result.printFull();
+        result.print();
 
         final var expectedBrokers = new TreeMap<Integer, Status.Broker>();
         expectedBrokers.put(1, Status.Broker.builder()

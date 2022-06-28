@@ -7,11 +7,11 @@ import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomFreeDestinationB
 import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomSourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.rebalancer.FirstFitDecreasingRebalancer;
 import com.github.davgarcia.brodrebalancer.LogDirsInput;
-import com.github.davgarcia.brodrebalancer.ReassignmentsOutput;
+import com.github.davgarcia.brodrebalancer.AssignmentsOutput;
 import com.github.davgarcia.brodrebalancer.Rebalancer;
 import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.adapter.file.LogDirsFileAdapter;
-import com.github.davgarcia.brodrebalancer.adapter.file.ReassignmentsFileAdapter;
+import com.github.davgarcia.brodrebalancer.adapter.file.AssignmentsFileAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +21,14 @@ import java.util.stream.Stream;
 public class Registry {
 
     private final List<LogDirsInput<?>> logDirsInputs;
-    private final List<ReassignmentsOutput<?>> reassignmentsOutputs;
+    private final List<AssignmentsOutput<?>> assignmentsOutputs;
     private final List<Rebalancer<?>> rebalancers;
     private final List<SourceBrokerStrategy<?>> srcBrokerStrategies;
     private final List<DestinationBrokerStrategy<?>> dstBrokerStrategies;
 
     public Registry() {
         logDirsInputs = List.of(new LogDirsFileAdapter());
-        reassignmentsOutputs = List.of(new ReassignmentsFileAdapter());
+        assignmentsOutputs = List.of(new AssignmentsFileAdapter());
         rebalancers = List.of(new FirstFitDecreasingRebalancer());
         srcBrokerStrategies = List.of(new RandomSourceBrokerStrategy());
         dstBrokerStrategies = List.of(new RandomFreeDestinationBrokerStrategy(), new RandomDestinationBrokerStrategy());
@@ -36,7 +36,7 @@ public class Registry {
 
     public List<Registered<?>> getAllRegistered() {
         final var result = new ArrayList<Registered<?>>();
-        Stream.of(logDirsInputs, reassignmentsOutputs, rebalancers, srcBrokerStrategies, dstBrokerStrategies)
+        Stream.of(logDirsInputs, assignmentsOutputs, rebalancers, srcBrokerStrategies, dstBrokerStrategies)
                 .forEach(result::addAll);
         return result;
     }
@@ -45,8 +45,8 @@ public class Registry {
         return getRegistered(logDirsInputs, name);
     }
 
-    public ReassignmentsOutput<?> getReassignmentsOutput(final String name) {
-        return getRegistered(reassignmentsOutputs, name);
+    public AssignmentsOutput<?> getAssignmentsOutput(final String name) {
+        return getRegistered(assignmentsOutputs, name);
     }
 
     public Rebalancer<?> getRebalancer(final String name) {
@@ -70,7 +70,7 @@ public class Registry {
 
     public void printUsage() {
         System.out.println(format("  Inputs", logDirsInputs));
-        System.out.println(format("  Outputs", reassignmentsOutputs));
+        System.out.println(format("  Outputs", assignmentsOutputs));
         System.out.println(format("  Rebalancers", rebalancers));
         System.out.println(format("  Source broker strategies", srcBrokerStrategies));
         System.out.println(format("  Destination broker strategies", dstBrokerStrategies));

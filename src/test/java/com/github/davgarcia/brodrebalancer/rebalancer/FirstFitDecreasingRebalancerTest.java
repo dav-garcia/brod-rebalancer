@@ -1,7 +1,7 @@
 package com.github.davgarcia.brodrebalancer.rebalancer;
 
 import com.github.davgarcia.brodrebalancer.ObjectMother;
-import com.github.davgarcia.brodrebalancer.Reassignments;
+import com.github.davgarcia.brodrebalancer.Assignments;
 import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomFreeDestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomSourceBrokerStrategy;
 import org.junit.jupiter.api.Test;
@@ -22,14 +22,14 @@ class FirstFitDecreasingRebalancerTest {
         sut.setBrokerStrategies(new RandomSourceBrokerStrategy(), new RandomFreeDestinationBrokerStrategy());
         final var result = sut.rebalance(config, logDirs);
 
-        assertThat(result).isEqualTo(Reassignments.builder()
+        assertThat(result).isEqualTo(Assignments.builder()
                 .version(1)
                 .partitions(List.of(
-                        Reassignments.Partition.builder().topic("topic-a").partition(1).replicas(List.of(1, 3)).build(),
-                        Reassignments.Partition.builder().topic("topic-a").partition(2).replicas(List.of(1, 3)).build(),
-                        Reassignments.Partition.builder().topic("topic-b").partition(1).replicas(List.of(1, 3)).build(),
-                        Reassignments.Partition.builder().topic("topic-b").partition(2).replicas(List.of(2, 3)).build(),
-                        Reassignments.Partition.builder().topic("topic-c").partition(1).replicas(List.of(2, 3)).build()))
+                        Assignments.Partition.builder().topic("topic-a").partition(1).replicas(List.of(1, 3)).build(),
+                        Assignments.Partition.builder().topic("topic-a").partition(2).replicas(List.of(1, 3)).build(),
+                        Assignments.Partition.builder().topic("topic-b").partition(1).replicas(List.of(1, 3)).build(),
+                        Assignments.Partition.builder().topic("topic-b").partition(2).replicas(List.of(2, 3)).build(),
+                        Assignments.Partition.builder().topic("topic-c").partition(1).replicas(List.of(2, 3)).build()))
                 .build());
     }
 }

@@ -37,15 +37,17 @@ public class Main {
 
         final var config = new BrokersConfigLoader().loadFromPath(Path.of(cliOptions.getBrokers()));
         final var input = registry.getLogDirsInput(cliOptions.getInput());
-        final var output = registry.getReassignmentsOutput(cliOptions.getOutput());
+        final var output = registry.getAssignmentsOutput(cliOptions.getOutput());
         final var rebalancer = registry.getRebalancer(cliOptions.getRebalancer());
         final var srcBrokerStrategy = registry.getSourceBrokerStrategy(cliOptions.getSrcBrokerStrategy());
         final var dstBrokerStrategy = registry.getDestinationBrokerStrategy(cliOptions.getDstBrokerStrategy());
+        final var checker = new Checker();
 
         rebalancer.setBrokerStrategies(srcBrokerStrategy, dstBrokerStrategy);
 
         final var logDirs = input.load();
         final var reassignments = rebalancer.rebalance(config, logDirs);
+        checker.check(Assignments.from(logDirs), reassignments);
         output.save(reassignments);
     }
 

@@ -2,7 +2,7 @@ package com.github.davgarcia.brodrebalancer.config;
 
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import com.github.davgarcia.brodrebalancer.adapter.file.LogDirsFileAdapter;
-import com.github.davgarcia.brodrebalancer.adapter.file.ReassignmentsFileAdapter;
+import com.github.davgarcia.brodrebalancer.adapter.file.AssignmentsFileAdapter;
 import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomDestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomSourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.rebalancer.FirstFitDecreasingRebalancer;
@@ -30,15 +30,15 @@ class RegistryTest {
 
     @Test
     void givenValidOutputNameThenReturnIt() {
-        final var result = sut.getReassignmentsOutput("file");
+        final var result = sut.getAssignmentsOutput("file");
 
-        assertThat(result).isInstanceOf(ReassignmentsFileAdapter.class);
+        assertThat(result).isInstanceOf(AssignmentsFileAdapter.class);
     }
 
     @Test
     void givenInvalidOutputNameThenFail() {
         Assertions.assertThrows(BrodRebalancerException.class,
-                () -> sut.getReassignmentsOutput("invalid"));
+                () -> sut.getAssignmentsOutput("invalid"));
     }
 
     @Test

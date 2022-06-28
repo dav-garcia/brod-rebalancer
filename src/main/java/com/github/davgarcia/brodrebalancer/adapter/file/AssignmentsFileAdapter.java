@@ -3,8 +3,8 @@ package com.github.davgarcia.brodrebalancer.adapter.file;
 import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
-import com.github.davgarcia.brodrebalancer.Reassignments;
-import com.github.davgarcia.brodrebalancer.ReassignmentsOutput;
+import com.github.davgarcia.brodrebalancer.Assignments;
+import com.github.davgarcia.brodrebalancer.AssignmentsOutput;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,12 +12,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class ReassignmentsFileAdapter implements ReassignmentsOutput<ReassignmentsFileAdapter.CliOptions> {
+public class AssignmentsFileAdapter implements AssignmentsOutput<AssignmentsFileAdapter.CliOptions> {
 
     private final ObjectMapper objectMapper;
     private final CliOptions cliOptions;
 
-    public ReassignmentsFileAdapter() {
+    public AssignmentsFileAdapter() {
         objectMapper = new ObjectMapper();
         cliOptions = new CliOptions();
     }
@@ -33,15 +33,15 @@ public class ReassignmentsFileAdapter implements ReassignmentsOutput<Reassignmen
     }
 
     @Override
-    public void save(final Reassignments reassignments) {
+    public void save(final Assignments assignments) {
         if (cliOptions.getOutputPath() == null) {
             throw new BrodRebalancerException("Required option is missing: --output-path");
         }
 
         try (final var writer = new FileWriter(cliOptions.getOutputPath(), StandardCharsets.UTF_8)) {
-            objectMapper.writeValue(writer, reassignments);
+            objectMapper.writeValue(writer, assignments);
         } catch (IOException e) {
-            throw new BrodRebalancerException("Error writing reassignments to path: " + cliOptions.getOutputPath(), e);
+            throw new BrodRebalancerException("Error writing assignments to path: " + cliOptions.getOutputPath(), e);
         }
     }
 
