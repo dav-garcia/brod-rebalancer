@@ -41,12 +41,14 @@ public class Main {
         final var rebalancer = registry.getRebalancer(cliOptions.getRebalancer());
         final var srcBrokerStrategy = registry.getSourceBrokerStrategy(cliOptions.getSrcBrokerStrategy());
         final var dstBrokerStrategy = registry.getDestinationBrokerStrategy(cliOptions.getDstBrokerStrategy());
+        final var leaderStrategy = registry.getLeaderStrategy(cliOptions.getLeaderStrategy());
         final var checker = new Checker();
 
         rebalancer.setBrokerStrategies(srcBrokerStrategy, dstBrokerStrategy);
 
         final var logDirs = input.load();
         final var reassignments = rebalancer.rebalance(config, logDirs);
+        leaderStrategy.electLeaders(config, reassignments);
         checker.check(Assignments.from(logDirs), reassignments);
         output.save(reassignments);
     }
@@ -75,5 +77,8 @@ public class Main {
 
         @Parameter(names = "--dst-broker-strategy", description = "How to choose the destination broker where the replica will be moved.")
         public String dstBrokerStrategy = "random-free";
+
+        @Parameter(names = "--leader-strategy", description = "How the leader replica will be chosen for each partition.")
+        public String leaderStrategy = "shuffle";
     }
 }

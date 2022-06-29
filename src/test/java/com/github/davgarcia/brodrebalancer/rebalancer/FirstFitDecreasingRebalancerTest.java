@@ -2,8 +2,8 @@ package com.github.davgarcia.brodrebalancer.rebalancer;
 
 import com.github.davgarcia.brodrebalancer.ObjectMother;
 import com.github.davgarcia.brodrebalancer.Assignments;
-import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomFreeDestinationBrokerStrategy;
-import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomSourceBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.strategy.RandomFreeDestinationBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.strategy.RandomSourceBrokerStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

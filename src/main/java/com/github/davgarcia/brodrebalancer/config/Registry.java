@@ -2,10 +2,11 @@ package com.github.davgarcia.brodrebalancer.config;
 
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import com.github.davgarcia.brodrebalancer.DestinationBrokerStrategy;
-import com.github.davgarcia.brodrebalancer.brokerstrategy.MostOverloadedSourceBrokerStrategy;
-import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomDestinationBrokerStrategy;
-import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomFreeDestinationBrokerStrategy;
-import com.github.davgarcia.brodrebalancer.brokerstrategy.RandomSourceBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.LeaderStrategy;
+import com.github.davgarcia.brodrebalancer.strategy.MostOverloadedSourceBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.strategy.RandomDestinationBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.strategy.RandomFreeDestinationBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.strategy.RandomSourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.rebalancer.FirstFitDecreasingRebalancer;
 import com.github.davgarcia.brodrebalancer.LogDirsInput;
 import com.github.davgarcia.brodrebalancer.AssignmentsOutput;
@@ -13,6 +14,7 @@ import com.github.davgarcia.brodrebalancer.Rebalancer;
 import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.adapter.file.LogDirsFileAdapter;
 import com.github.davgarcia.brodrebalancer.adapter.file.AssignmentsFileAdapter;
+import com.github.davgarcia.brodrebalancer.strategy.ShuffleLeaderStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class Registry {
     private final List<Rebalancer<?>> rebalancers;
     private final List<SourceBrokerStrategy<?>> srcBrokerStrategies;
     private final List<DestinationBrokerStrategy<?>> dstBrokerStrategies;
+    private final List<LeaderStrategy<?>> leaderStrategies;
 
     public Registry() {
         logDirsInputs = List.of(new LogDirsFileAdapter());
@@ -33,11 +36,12 @@ public class Registry {
         rebalancers = List.of(new FirstFitDecreasingRebalancer());
         srcBrokerStrategies = List.of(new MostOverloadedSourceBrokerStrategy(), new RandomSourceBrokerStrategy());
         dstBrokerStrategies = List.of(new RandomFreeDestinationBrokerStrategy(), new RandomDestinationBrokerStrategy());
+        leaderStrategies = List.of(new ShuffleLeaderStrategy());
     }
 
     public List<Registered<?>> getAllRegistered() {
         final var result = new ArrayList<Registered<?>>();
-        Stream.of(logDirsInputs, assignmentsOutputs, rebalancers, srcBrokerStrategies, dstBrokerStrategies)
+        Stream.of(logDirsInputs, assignmentsOutputs, rebalancers, srcBrokerStrategies, dstBrokerStrategies, leaderStrategies)
                 .forEach(result::addAll);
         return result;
     }
@@ -62,6 +66,10 @@ public class Registry {
         return getRegistered(dstBrokerStrategies, name);
     }
 
+    public LeaderStrategy<?> getLeaderStrategy(final String name) {
+        return getRegistered(leaderStrategies, name);
+    }
+
     private <T extends Registered<?>> T getRegistered(final List<T> list, final String name) {
         return list.stream()
                 .filter(r -> r.getName().equals(name))
@@ -75,6 +83,7 @@ public class Registry {
         System.out.println(format("  Rebalancers", rebalancers));
         System.out.println(format("  Source broker strategies", srcBrokerStrategies));
         System.out.println(format("  Destination broker strategies", dstBrokerStrategies));
+        System.out.println(format("  Leader election strategies", leaderStrategies));
     }
 
     private <T extends Registered<?>> String format(final String title, final List<T> list) {

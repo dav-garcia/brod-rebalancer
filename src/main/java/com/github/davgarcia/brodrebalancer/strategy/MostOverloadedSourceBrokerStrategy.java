@@ -1,4 +1,4 @@
-package com.github.davgarcia.brodrebalancer.brokerstrategy;
+package com.github.davgarcia.brodrebalancer.strategy;
 
 import com.github.davgarcia.brodrebalancer.MovablePartitions;
 import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;

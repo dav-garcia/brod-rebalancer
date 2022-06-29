@@ -17,6 +17,7 @@ public class Checker {
     public void check(final Assignments before, final Assignments after) {
         checkVersion(after);
         checkPartitions(before, after);
+        System.out.println("Reassignment checks: OK");
     }
 
     private void checkVersion(final Assignments assignments) {
