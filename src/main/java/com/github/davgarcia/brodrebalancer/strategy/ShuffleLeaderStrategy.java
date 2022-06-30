@@ -17,6 +17,11 @@ public class ShuffleLeaderStrategy implements LeaderStrategy<Object> {
     }
 
     @Override
+    public String getHelp() {
+        return "Random (uniform) distribution of leader replicas between brokers.";
+    }
+
+    @Override
     public Object getCliOptions() {
         return new Object();
     }

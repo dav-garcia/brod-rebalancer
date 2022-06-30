@@ -16,7 +16,7 @@ import lombok.Setter;
  * Rebalancer based on the First-Fit-Decreasing (FFD) algorithm for the
  * <a href="https://en.wikipedia.org/wiki/Bin_packing_problem">bin packing problem</a>.
  * <p>
- * The items to pack are the movable partitions and the bins are the not overloaded brokers.<br>
+ * The items to pack are the movable partitions and the bins are the free brokers.<br>
  * The "first fit" function is chosen from the CLI option --dst-broker-strategy.
  */
 public class FirstFitDecreasingRebalancer implements Rebalancer<FirstFitDecreasingRebalancer.CliOptions> {
@@ -33,6 +33,14 @@ public class FirstFitDecreasingRebalancer implements Rebalancer<FirstFitDecreasi
     @Override
     public String getName() {
         return "ffd";
+    }
+
+    @Override
+    public String getHelp() {
+        return "Applies a First-Fit-Decreasing (FFD) algorithm where the items to pack" + System.lineSeparator() +
+                "  are the movable partitions (i.e. the ones in overloaded brokers)" + System.lineSeparator() +
+                "  and the bins are the free brokers." + System.lineSeparator() +
+                "  Source/destination broker strategies are taken into account.";
     }
 
     @Override

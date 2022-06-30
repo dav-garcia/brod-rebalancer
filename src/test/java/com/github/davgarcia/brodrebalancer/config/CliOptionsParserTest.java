@@ -39,6 +39,11 @@ class CliOptionsParserTest {
             }
 
             @Override
+            public String getHelp() {
+                return null;
+            }
+
+            @Override
             public Object getCliOptions() {
                 return new Object();
             }
@@ -48,6 +53,11 @@ class CliOptionsParserTest {
             @Override
             public String getName() {
                 return "test2";
+            }
+
+            @Override
+            public String getHelp() {
+                return null;
             }
 
             @Override

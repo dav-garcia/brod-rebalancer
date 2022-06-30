@@ -11,6 +11,7 @@ import java.nio.file.Path;
 
 public class Main {
 
+    private static final String NAME = "brod-rebalancer";
     private static final String HEADER =
             "Builds a smart partition reassignment plan for Kafka" + System.lineSeparator() +
             "taking into account brokers capacity and partition sizes." + System.lineSeparator();
@@ -19,7 +20,7 @@ public class Main {
         final var registry = new Registry();
         final var cliOptions = new CliOptions();
 
-        final var optionsParser = new CliOptionsParser("brod-rebalancer", HEADER);
+        final var optionsParser = new CliOptionsParser(NAME, HEADER);
         optionsParser.addAllCliOptions(registry);
         optionsParser.addCliOptions(cliOptions);
         try {

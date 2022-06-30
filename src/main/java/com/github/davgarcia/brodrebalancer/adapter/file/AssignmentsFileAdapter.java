@@ -28,6 +28,11 @@ public class AssignmentsFileAdapter implements AssignmentsOutput<AssignmentsFile
     }
 
     @Override
+    public String getHelp() {
+        return "Writes output to a JSON file compatible with kafka-reassign-partitions.sh.";
+    }
+
+    @Override
     public CliOptions getCliOptions() {
         return cliOptions;
     }

@@ -22,6 +22,12 @@ public class RandomFreeDestinationBrokerStrategy implements DestinationBrokerStr
     }
 
     @Override
+    public String getHelp() {
+        return "The destination broker is chosen randomly between those not having" + System.lineSeparator() +
+                "  the replica already and not being overloaded after the move.";
+    }
+
+    @Override
     public Object getCliOptions() {
         return new Object();
     }

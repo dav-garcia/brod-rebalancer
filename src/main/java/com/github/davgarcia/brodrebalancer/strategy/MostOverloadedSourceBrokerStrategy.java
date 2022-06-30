@@ -14,6 +14,11 @@ public class MostOverloadedSourceBrokerStrategy implements SourceBrokerStrategy<
     }
 
     @Override
+    public String getHelp() {
+        return "The replica to be moved is taken from the most overloaded broker.";
+    }
+
+    @Override
     public Object getCliOptions() {
         return new Object();
     }

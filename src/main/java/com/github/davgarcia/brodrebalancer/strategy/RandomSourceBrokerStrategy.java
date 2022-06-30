@@ -21,6 +21,11 @@ public class RandomSourceBrokerStrategy implements SourceBrokerStrategy<Object> 
     }
 
     @Override
+    public String getHelp() {
+        return "Choose a random source broker for the next replica to be moved.";
+    }
+
+    @Override
     public Object getCliOptions() {
         return new Object();
     }

@@ -21,6 +21,11 @@ public class RandomDestinationBrokerStrategy implements DestinationBrokerStrateg
     }
 
     @Override
+    public String getHelp() {
+        return "The replica is moved to any broker (not having it already) randomly.";
+    }
+
+    @Override
     public Object getCliOptions() {
         return new Object();
     }

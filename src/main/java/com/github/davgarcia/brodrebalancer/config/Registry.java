@@ -1,25 +1,24 @@
 package com.github.davgarcia.brodrebalancer.config;
 
+import com.github.davgarcia.brodrebalancer.AssignmentsOutput;
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import com.github.davgarcia.brodrebalancer.DestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.LeaderStrategy;
+import com.github.davgarcia.brodrebalancer.LogDirsInput;
+import com.github.davgarcia.brodrebalancer.Rebalancer;
+import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
+import com.github.davgarcia.brodrebalancer.adapter.file.AssignmentsFileAdapter;
+import com.github.davgarcia.brodrebalancer.adapter.file.LogDirsFileAdapter;
+import com.github.davgarcia.brodrebalancer.rebalancer.FirstFitDecreasingRebalancer;
 import com.github.davgarcia.brodrebalancer.strategy.MostOverloadedSourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.strategy.RandomDestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.strategy.RandomFreeDestinationBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.strategy.RandomSourceBrokerStrategy;
-import com.github.davgarcia.brodrebalancer.rebalancer.FirstFitDecreasingRebalancer;
-import com.github.davgarcia.brodrebalancer.LogDirsInput;
-import com.github.davgarcia.brodrebalancer.AssignmentsOutput;
-import com.github.davgarcia.brodrebalancer.Rebalancer;
-import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
-import com.github.davgarcia.brodrebalancer.adapter.file.LogDirsFileAdapter;
-import com.github.davgarcia.brodrebalancer.adapter.file.AssignmentsFileAdapter;
 import com.github.davgarcia.brodrebalancer.strategy.ShuffleLeaderStrategy;
 import com.github.davgarcia.brodrebalancer.strategy.WeightedShuffleLeaderStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("java:S1452") // Use of wildcards is required.
@@ -80,17 +79,18 @@ public class Registry {
     }
 
     public void printUsage() {
-        System.out.println(format("  Inputs", logDirsInputs));
-        System.out.println(format("  Outputs", assignmentsOutputs));
-        System.out.println(format("  Rebalancers", rebalancers));
-        System.out.println(format("  Source broker strategies", srcBrokerStrategies));
-        System.out.println(format("  Destination broker strategies", dstBrokerStrategies));
-        System.out.println(format("  Leader election strategies", leaderStrategies));
+        System.out.println(format("Inputs:", logDirsInputs));
+        System.out.println(format("Outputs:", assignmentsOutputs));
+        System.out.println(format("Rebalancers:", rebalancers));
+        System.out.println(format("Source broker strategies:", srcBrokerStrategies));
+        System.out.println(format("Destination broker strategies:", dstBrokerStrategies));
+        System.out.println(format("Leader election strategies:", leaderStrategies));
     }
 
     private <T extends Registered<?>> String format(final String title, final List<T> list) {
-        return String.format("%s: %s", title, list.stream()
-                .map(Registered::getName)
-                .collect(Collectors.joining(", ")));
+        final var builder = new StringBuilder(title);
+        builder.append(System.lineSeparator());
+        list.forEach(r -> builder.append("- ").append(r.getName()).append(": ").append(r.getHelp()).append(System.lineSeparator()));
+        return builder.toString();
     }
 }
