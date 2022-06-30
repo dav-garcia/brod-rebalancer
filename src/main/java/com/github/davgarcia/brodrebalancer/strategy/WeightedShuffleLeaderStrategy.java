@@ -29,7 +29,7 @@ public class WeightedShuffleLeaderStrategy implements LeaderStrategy<Object> {
     @Override
     public String getHelp() {
         return "Weighted random (not uniform) distribution of leader replicas." + System.lineSeparator() +
-                "  Beware this leader election strategy can overload your most powerful brokers.";
+                "  Beware this leader election strategy might overload your most powerful brokers.";
     }
 
     @Override

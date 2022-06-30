@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.nio.file.Path;
+import java.util.logging.LogManager;
 
 public class Main {
 
@@ -17,6 +18,8 @@ public class Main {
             "taking into account brokers capacity and partition sizes." + System.lineSeparator();
 
     public static void main(String[] args) {
+        LogManager.getLogManager().reset(); // Disable logging.
+
         final var registry = new Registry();
         final var cliOptions = new CliOptions();
 
