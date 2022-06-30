@@ -80,6 +80,6 @@ public class Main {
         public String dstBrokerStrategy = "random-free";
 
         @Parameter(names = "--leader-strategy", description = "How the leader replica will be chosen for each partition.")
-        public String leaderStrategy = "shuffle";
+        public String leaderStrategy = "weighted-shuffle";
     }
 }

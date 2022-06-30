@@ -37,7 +37,7 @@ public class Registry {
         rebalancers = List.of(new FirstFitDecreasingRebalancer());
         srcBrokerStrategies = List.of(new MostOverloadedSourceBrokerStrategy(), new RandomSourceBrokerStrategy());
         dstBrokerStrategies = List.of(new RandomFreeDestinationBrokerStrategy(), new RandomDestinationBrokerStrategy());
-        leaderStrategies = List.of(new ShuffleLeaderStrategy(), new WeightedShuffleLeaderStrategy());
+        leaderStrategies = List.of(new WeightedShuffleLeaderStrategy(), new ShuffleLeaderStrategy());
     }
 
     public List<Registered<?>> getAllRegistered() {
