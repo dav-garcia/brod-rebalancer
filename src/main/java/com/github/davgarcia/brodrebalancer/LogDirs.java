@@ -11,6 +11,7 @@ import java.util.List;
 
 @Value
 @Builder
+@SuppressWarnings("java:S1700") // The field names are intentionally the same as their containing classes.
 public class LogDirs {
 
     @Min(1)

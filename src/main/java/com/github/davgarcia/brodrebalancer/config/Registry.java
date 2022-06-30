@@ -15,12 +15,14 @@ import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.adapter.file.LogDirsFileAdapter;
 import com.github.davgarcia.brodrebalancer.adapter.file.AssignmentsFileAdapter;
 import com.github.davgarcia.brodrebalancer.strategy.ShuffleLeaderStrategy;
+import com.github.davgarcia.brodrebalancer.strategy.WeightedShuffleLeaderStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@SuppressWarnings("java:S1452") // Use of wildcards is required.
 public class Registry {
 
     private final List<LogDirsInput<?>> logDirsInputs;
@@ -36,7 +38,7 @@ public class Registry {
         rebalancers = List.of(new FirstFitDecreasingRebalancer());
         srcBrokerStrategies = List.of(new MostOverloadedSourceBrokerStrategy(), new RandomSourceBrokerStrategy());
         dstBrokerStrategies = List.of(new RandomFreeDestinationBrokerStrategy(), new RandomDestinationBrokerStrategy());
-        leaderStrategies = List.of(new ShuffleLeaderStrategy());
+        leaderStrategies = List.of(new ShuffleLeaderStrategy(), new WeightedShuffleLeaderStrategy());
     }
 
     public List<Registered<?>> getAllRegistered() {

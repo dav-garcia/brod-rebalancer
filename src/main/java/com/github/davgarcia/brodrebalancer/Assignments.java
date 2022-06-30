@@ -60,6 +60,7 @@ public class Assignments {
 
     @Value
     @Builder
+    @SuppressWarnings("java:S1700") // The field name must be "partition".
     public static class Partition {
 
         String topic;

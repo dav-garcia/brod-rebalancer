@@ -21,9 +21,10 @@ public class ShuffleLeaderStrategy implements LeaderStrategy<Object> {
         return new Object();
     }
 
+    @SuppressWarnings("java:S2119") // Intentionally create a new random for better uniform distribution.
     @Override
     public void electLeaders(final BrokersConfig config, final Assignments assignments) {
-        final var random = new Random(); // Intentionally create a new random for better uniform distribution.
+        final var random = new Random();
 
         printLeaders("Leaders before reelection", assignments);
         assignments.getPartitions().forEach(p -> Collections.shuffle(p.getReplicas(), random));
@@ -35,6 +36,5 @@ public class ShuffleLeaderStrategy implements LeaderStrategy<Object> {
                 .map(p -> p.getReplicas().get(0))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         System.out.printf("%s: %s%n", title, leaders);
-
     }
 }
