@@ -64,15 +64,15 @@ public class Status {
     }
 
     public void print() {
-        System.out.println("____________________________________________________________________________________");
-        System.out.println("Broker    Capacity      Current size         Goal size         Diff size       Usage");
+        System.out.println("________________________________________________________________________________");
+        System.out.println("Broker Partition  Capac    Current size       Goal size       Diff size    Usage");
         brokers.values().stream()
-                .map(b -> String.format("%6d  %10.1f  %16.0f  %16.0f  %+16.0f  %9.1f%%",
-                        b.getId(), b.getCapacity(), b.getCurrentSize(), b.getGoalSize(),
+                .map(b -> String.format("%6d  %8d  %5.1f  %14.0f  %14.0f  %+14.0f  %6.1f%%",
+                        b.getId(), b.getPartitions().size(), b.getCapacity(), b.getCurrentSize(), b.getGoalSize(),
                         b.getGoalSize() - b.getCurrentSize(),
                         b.computeUsageRatio() * 100.0))
                 .forEach(System.out::println);
-        System.out.printf("Total gap: %-16.0f  No of moves: %-10d  Amount moved: %-16.0f%n",
+        System.out.printf("Total gap: %-14.0f  No of moves: %-10d  Amount moved: %-14.0f%n",
                 computeGap(), cumulativeNumMoves, cumulativeSizeMoved);
     }
 
