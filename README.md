@@ -18,7 +18,7 @@ This will produce the file `brod-rebalancer-1.0-SNAPSHOT-jar-with-dependencies.j
 
 ## How to use
 
-### Broker capacity configuration
+### Broker capacity and other configurations
 
 First, define your Kafka brokers capacity in a JSON file like this one:
 ```json
@@ -52,6 +52,20 @@ In the example above, broker 4 is twice as powerful as brokers 2 and 3. \
 On the other hand, brokers 1 and 5 are 50% more powerful than brokers 2 and 3. \
 That's it.
 
+This configuration file can also list topic names to include or exclude. \
+For example:
+```json
+{
+  "version": 1,
+  "brokers": [
+    ...
+  ],
+  "topics": {
+    "exclude": ["__internal_topic", "SPECIAL_TOPIC"]
+  }
+}
+```
+
 ### Log-dirs input
 
 Run `kafka-log-dirs.sh` from Apache Kafka `bin` directory to export information about all your partitions, for example:
@@ -71,7 +85,7 @@ Now it's `brod-rebalancer`'s turn to generate a partition reassignment proposal 
 
 See the section below for more details about the available options, but a common run would be like this:
 ```shell
-$ java -jar target/brod-rebalancer-1.0-SNAPSHOT-jar-with-dependencies.jar --brokers brokers-config.json --input-path 
+$ java -jar target/brod-rebalancer-1.0-SNAPSHOT-jar-with-dependencies.jar --config config.json --input-path 
 log-dirs.json --output-path reassignments.json
 ```
 
@@ -134,9 +148,9 @@ taking into account brokers capacity and partition sizes.
 
 Usage: brod-rebalancer [options]
   Options:
-  * --brokers
-      Brokers' capacity definition file location.
-      Default: brokers.json
+  * --config
+      Location of Brokers' capacity definition and other configurations.
+      Default: config.json
     --dst-broker-strategy
       How to choose the destination broker where the replica will be moved.
       Default: random-free
@@ -191,7 +205,7 @@ Destination broker strategies:
 
 Leader election strategies:
 - weighted-shuffle: Weighted random (not uniform) distribution of leader replicas.
-  Beware this leader election strategy can overload your most powerful brokers.
+  Beware this leader election strategy might overload your most powerful brokers.
 - shuffle: Random (uniform) distribution of leader replicas between brokers.
 ```
 

@@ -2,7 +2,7 @@ package com.github.davgarcia.brodrebalancer.strategy;
 
 import com.github.davgarcia.brodrebalancer.Assignments;
 import com.github.davgarcia.brodrebalancer.LeaderStrategy;
-import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
+import com.github.davgarcia.brodrebalancer.config.Configuration;
 
 import java.util.Collections;
 import java.util.Random;
@@ -28,7 +28,7 @@ public class ShuffleLeaderStrategy implements LeaderStrategy<Object> {
 
     @SuppressWarnings("java:S2119") // Intentionally create a new random for better uniform distribution.
     @Override
-    public void electLeaders(final BrokersConfig config, final Assignments assignments) {
+    public void electLeaders(final Configuration config, final Assignments assignments) {
         final var random = new Random();
 
         printLeaders("Leaders before reelection", assignments);

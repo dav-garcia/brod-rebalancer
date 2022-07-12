@@ -8,7 +8,7 @@ import com.github.davgarcia.brodrebalancer.MovablePartitions;
 import com.github.davgarcia.brodrebalancer.Rebalancer;
 import com.github.davgarcia.brodrebalancer.SourceBrokerStrategy;
 import com.github.davgarcia.brodrebalancer.Status;
-import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
+import com.github.davgarcia.brodrebalancer.config.Configuration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,7 +55,7 @@ public class FirstFitDecreasingRebalancer implements Rebalancer<FirstFitDecreasi
     }
 
     @Override
-    public Assignments rebalance(final BrokersConfig config, final LogDirs logDirs) {
+    public Assignments rebalance(final Configuration config, final LogDirs logDirs) {
         final var status = Status.from(config, logDirs);
         final var movablePartitions = MovablePartitions.from(logDirs, status);
 
@@ -79,12 +79,12 @@ public class FirstFitDecreasingRebalancer implements Rebalancer<FirstFitDecreasi
                 }
                 if (srcBroker != null && dstBroker != null) {
                     status.move(srcBroker, dstBroker, partition.getId(), partition.getSize());
-
-                    status.print();
                 }
             }
             currentGap = status.computeGap();
         } while (partition != null && (currentGap / maxGap) > maxThreshold);
+
+        status.print();
 
         return Assignments.from(status);
     }

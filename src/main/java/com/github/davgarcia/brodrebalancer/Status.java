@@ -1,6 +1,6 @@
 package com.github.davgarcia.brodrebalancer;
 
-import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
+import com.github.davgarcia.brodrebalancer.config.Configuration;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -76,7 +76,7 @@ public class Status {
                 computeGap(), cumulativeNumMoves, cumulativeSizeMoved);
     }
 
-    public static Status from(final BrokersConfig config, final LogDirs logDirs) {
+    public static Status from(final Configuration config, final LogDirs logDirs) {
         validate(config, logDirs);
 
         final var partitions = computePartitions(logDirs);
@@ -85,7 +85,7 @@ public class Status {
                 .mapToDouble(Double::doubleValue)
                 .sum();
         final var totalCapacity = config.getBrokers().stream()
-                .mapToDouble(BrokersConfig.BrokerConfig::getCapacity)
+                .mapToDouble(Configuration.BrokerConfig::getCapacity)
                 .sum();
 
         final var brokers = config.getBrokers().stream()
@@ -103,9 +103,9 @@ public class Status {
                 .build();
     }
 
-    private static void validate(final BrokersConfig config, final LogDirs logDirs) {
+    private static void validate(final Configuration config, final LogDirs logDirs) {
         final var configIds = config.getBrokers().stream()
-                .map(BrokersConfig.BrokerConfig::getId)
+                .map(Configuration.BrokerConfig::getId)
                 .collect(Collectors.toSet());
         final var logDirsIds = logDirs.getBrokers().stream()
                 .map(LogDirs.Broker::getBroker)

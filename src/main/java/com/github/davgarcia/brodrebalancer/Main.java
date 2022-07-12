@@ -1,8 +1,8 @@
 package com.github.davgarcia.brodrebalancer;
 
 import com.beust.jcommander.Parameter;
-import com.github.davgarcia.brodrebalancer.config.BrokersConfigLoader;
 import com.github.davgarcia.brodrebalancer.config.CliOptionsParser;
+import com.github.davgarcia.brodrebalancer.config.ConfigurationLoader;
 import com.github.davgarcia.brodrebalancer.config.Registry;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +22,13 @@ public class Main {
 
         final var registry = new Registry();
         final var cliOptions = new CliOptions();
+        if (!parseOptions(registry, cliOptions, args)) {
+            return;
+        }
+        run(registry, cliOptions);
+    }
 
+    private static boolean parseOptions(final Registry registry, final CliOptions cliOptions, final String[] args) {
         final var optionsParser = new CliOptionsParser(NAME, HEADER);
         optionsParser.addAllCliOptions(registry);
         optionsParser.addCliOptions(cliOptions);
@@ -36,25 +42,21 @@ public class Main {
         if (cliOptions.isHelp() ) {
             optionsParser.printUsage();
             registry.printUsage();
-            return;
+            return false;
         }
+        return true;
+    }
 
-        final var config = new BrokersConfigLoader().loadFromPath(Path.of(cliOptions.getBrokers()));
+    private static void run(final Registry registry, final CliOptions cliOptions) {
+        final var config = new ConfigurationLoader().loadFromPath(Path.of(cliOptions.getConfig()));
         final var input = registry.getLogDirsInput(cliOptions.getInput());
         final var output = registry.getAssignmentsOutput(cliOptions.getOutput());
         final var rebalancer = registry.getRebalancer(cliOptions.getRebalancer());
         final var srcBrokerStrategy = registry.getSourceBrokerStrategy(cliOptions.getSrcBrokerStrategy());
         final var dstBrokerStrategy = registry.getDestinationBrokerStrategy(cliOptions.getDstBrokerStrategy());
         final var leaderStrategy = registry.getLeaderStrategy(cliOptions.getLeaderStrategy());
-        final var checker = new Checker();
 
-        rebalancer.setBrokerStrategies(srcBrokerStrategy, dstBrokerStrategy);
-
-        final var logDirs = input.load();
-        final var reassignments = rebalancer.rebalance(config, logDirs);
-        leaderStrategy.electLeaders(config, reassignments);
-        checker.check(Assignments.from(logDirs), reassignments);
-        output.save(reassignments);
+        new Runner(config, input, output, rebalancer, srcBrokerStrategy, dstBrokerStrategy, leaderStrategy).run();
     }
 
     @Getter
@@ -64,8 +66,8 @@ public class Main {
         @Parameter(names = "--help", help = true, description = "Print this help.")
         private boolean help = false;
 
-        @Parameter(names = "--brokers", required = true, description = "Brokers' capacity definition file location.")
-        private String brokers = "brokers.json";
+        @Parameter(names = "--config", required = true, description = "Location of Brokers' capacity definition and other configurations.")
+        private String config = "config.json";
 
         @Parameter(names = "--input", description = "Type of log dirs input loader.")
         private String input = "file";

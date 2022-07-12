@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "brokers": [
+    {
+      "id": 1,
+      "capacity": 1
+    }, {
+      "id": 2,
+      "capacity": 2
+    }
+  ],
+  "topics": {
+    "include": ["a", "b"],
+    "exclude": ["c"]
+  }
+}

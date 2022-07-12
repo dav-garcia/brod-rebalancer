@@ -1,6 +1,6 @@
 package com.github.davgarcia.brodrebalancer;
 
-import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
+import com.github.davgarcia.brodrebalancer.config.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -81,9 +81,9 @@ class StatusTest {
 
     @Test
     void givenInvalidBrokersConfigThenFail() {
-        final var config = BrokersConfig.builder()
+        final var config = Configuration.builder()
                 .brokers(List.of(
-                        BrokersConfig.BrokerConfig.builder().id(1).build()))
+                        Configuration.BrokerConfig.builder().id(1).build()))
                 .build();
         final var logDirs = LogDirs.builder()
                 .brokers(List.of(

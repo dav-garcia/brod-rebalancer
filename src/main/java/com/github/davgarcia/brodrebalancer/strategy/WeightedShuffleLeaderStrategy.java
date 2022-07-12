@@ -2,7 +2,7 @@ package com.github.davgarcia.brodrebalancer.strategy;
 
 import com.github.davgarcia.brodrebalancer.Assignments;
 import com.github.davgarcia.brodrebalancer.LeaderStrategy;
-import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
+import com.github.davgarcia.brodrebalancer.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,13 +39,13 @@ public class WeightedShuffleLeaderStrategy implements LeaderStrategy<Object> {
 
     @SuppressWarnings("java:S2119") // Intentionally create a new random for better uniform distribution.
     @Override
-    public void electLeaders(final BrokersConfig config, final Assignments assignments) {
+    public void electLeaders(final Configuration config, final Assignments assignments) {
         final var random = new Random();
 
         electLeaders(config, assignments, random);
     }
 
-    void electLeaders(final BrokersConfig config,  final Assignments assignments, final Random random) { // For testing.
+    void electLeaders(final Configuration config, final Assignments assignments, final Random random) { // For testing.
         final var weights = buildWeights(config);
 
         printLeaders("Leaders before reelection", assignments);
@@ -55,10 +55,10 @@ public class WeightedShuffleLeaderStrategy implements LeaderStrategy<Object> {
         printLeaders("Leaders after reelection", assignments);
     }
 
-    private List<Double> buildWeights(final BrokersConfig config) {
+    private List<Double> buildWeights(final Configuration config) {
         return config.getBrokers().stream()
-                .sorted(Comparator.comparingInt(BrokersConfig.BrokerConfig::getId)) // Config is user given => Can be unsorted.
-                .map(BrokersConfig.BrokerConfig::getCapacity)
+                .sorted(Comparator.comparingInt(Configuration.BrokerConfig::getId)) // Config is user given => Can be unsorted.
+                .map(Configuration.BrokerConfig::getCapacity)
                 .collect(Collectors.toList());
     }
 

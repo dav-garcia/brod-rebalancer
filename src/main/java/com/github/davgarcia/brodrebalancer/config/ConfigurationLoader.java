@@ -1,5 +1,6 @@
 package com.github.davgarcia.brodrebalancer.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davgarcia.brodrebalancer.BrodRebalancerException;
 import jakarta.validation.ConstraintViolation;
@@ -11,21 +12,22 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
-public class BrokersConfigLoader {
+public class ConfigurationLoader {
 
     private final ObjectMapper objectMapper;
     private final Validator validator;
 
-    public BrokersConfigLoader() {
-        objectMapper = new ObjectMapper();
+    public ConfigurationLoader() {
+        objectMapper = new ObjectMapper()
+                .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             validator = factory.getValidator();
         }
     }
 
-    public BrokersConfig loadFromPath(final Path path) {
+    public Configuration loadFromPath(final Path path) {
         try {
-            final var result = objectMapper.readValue(path.toFile(), BrokersConfig.class);
+            final var result = objectMapper.readValue(path.toFile(), Configuration.class);
             final var violations = validator.validate(result);
             if (!violations.isEmpty()) {
                 final var errors = violations.stream()

@@ -1,7 +1,7 @@
 package com.github.davgarcia.brodrebalancer.strategy;
 
 import com.github.davgarcia.brodrebalancer.Assignments;
-import com.github.davgarcia.brodrebalancer.config.BrokersConfig;
+import com.github.davgarcia.brodrebalancer.config.Configuration;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -19,13 +18,13 @@ class WeightedShuffleLeaderStrategyTest {
 
     @Test
     void givenAssignmentsAndUnsortedWeightsThenSuffleReplicas() {
-        final var config = BrokersConfig.builder()
+        final var config = Configuration.builder()
                 .brokers(List.of(
-                        BrokersConfig.BrokerConfig.builder().id(5).capacity(0.5).build(),
-                        BrokersConfig.BrokerConfig.builder().id(4).capacity(3.0).build(),
-                        BrokersConfig.BrokerConfig.builder().id(3).capacity(0.1).build(),
-                        BrokersConfig.BrokerConfig.builder().id(2).capacity(2.0).build(),
-                        BrokersConfig.BrokerConfig.builder().id(1).capacity(1.0).build()))
+                        Configuration.BrokerConfig.builder().id(5).capacity(0.5).build(),
+                        Configuration.BrokerConfig.builder().id(4).capacity(3.0).build(),
+                        Configuration.BrokerConfig.builder().id(3).capacity(0.1).build(),
+                        Configuration.BrokerConfig.builder().id(2).capacity(2.0).build(),
+                        Configuration.BrokerConfig.builder().id(1).capacity(1.0).build()))
                 .build();
         final var assignments = Assignments.builder()
                 .partitions(List.of(
