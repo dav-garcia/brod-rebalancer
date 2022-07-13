@@ -65,7 +65,7 @@ public class Status {
 
     public void print() {
         System.out.println("________________________________________________________________________________");
-        System.out.println("Broker Partition  Capac    Current size       Goal size       Diff size    Usage");
+        System.out.println("Broker  Replicas  Capac    Current size       Goal size       Diff size    Usage");
         brokers.values().stream()
                 .map(b -> String.format("%6d  %8d  %5.1f  %14.0f  %14.0f  %+14.0f  %6.1f%%",
                         b.id, b.partitions.size(), b.capacity, b.currentSize, b.goalSize,
