@@ -20,12 +20,12 @@ public class Configuration {
     @Max(1)
     int version;
     @NotEmpty
-    List<@Valid BrokerConfig> brokers;
-    @Valid TopicsConfig topics;
+    List<@Valid Broker> brokers;
+    @Valid Topics topics;
 
     @Value
     @Builder
-    public static class BrokerConfig {
+    public static class Broker {
 
         @Min(0)
         int id;
@@ -35,7 +35,7 @@ public class Configuration {
 
     @Value
     @Builder
-    public static class TopicsConfig {
+    public static class Topics {
 
         List<String> include;
         List<String> exclude;

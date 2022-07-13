@@ -50,7 +50,7 @@ public class Checker {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @AllArgsConstructor
     @EqualsAndHashCode
-    public static class PartitionReplicas {
+    private static class PartitionReplicas {
 
         String topic;
         int partition;
@@ -59,7 +59,7 @@ public class Checker {
         @Override
         public String toString() {
             return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
-                    .append("partition", String.format("%s-%d", topic, partition))
+                    .append("partition", topic + "-" + partition)
                     .append("numReplicas", numReplicas)
                     .toString();
         }

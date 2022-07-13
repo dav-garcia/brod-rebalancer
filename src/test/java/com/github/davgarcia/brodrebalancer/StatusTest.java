@@ -83,7 +83,7 @@ class StatusTest {
     void givenInvalidBrokersConfigThenFail() {
         final var config = Configuration.builder()
                 .brokers(List.of(
-                        Configuration.BrokerConfig.builder().id(1).build()))
+                        Configuration.Broker.builder().id(1).build()))
                 .build();
         final var logDirs = LogDirs.builder()
                 .brokers(List.of(

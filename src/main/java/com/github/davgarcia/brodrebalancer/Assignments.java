@@ -1,7 +1,12 @@
 package com.github.davgarcia.brodrebalancer;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -15,6 +20,37 @@ public class Assignments {
 
     int version;
     List<Partition> partitions;
+
+    public void print() {
+        final var brokers = new TreeMap<Integer, Broker>();
+
+        for (final var partition : partitions) {
+            if (!partition.replicas.isEmpty()) {
+                final var leader = partition.replicas.get(0);
+                brokers.computeIfAbsent(leader, Broker::of).leader++;
+
+                partition.replicas.stream()
+                        .skip(1) // Skips the leader.
+                        .forEach(f -> brokers.computeIfAbsent(f, Broker::of).follower++);
+            }
+        }
+
+        final var leaders = brokers.values().stream()
+                .mapToInt(b -> b.leader)
+                .sum();
+        final var totals = brokers.values().stream()
+                .mapToInt(Broker::computeTotal)
+                .sum();
+
+        System.out.println("________________________________________________________________________________");
+        System.out.println("Broker    Replicas    Leader  Follower   % leader  Leader distrib  Total distrib");
+        brokers.values().stream()
+                .map(b -> String.format("%6d  %10d  %8d  %8d      %4.1f%%           %4.1f%%          %4.1f%%",
+                        b.id, b.leader + b.follower, b.leader, b.follower,
+                        100.0 * b.leader / b.computeTotal(),
+                        100.0 * b.leader / leaders, 100.0 * b.computeTotal() / totals))
+                .forEach(System.out::println);
+    }
 
     public static Assignments from(final LogDirs logDirs) {
         final var rawPartitions = logDirs.getBrokers().stream()
@@ -66,5 +102,25 @@ public class Assignments {
         String topic;
         int partition;
         List<Integer> replicas;
+    }
+
+    @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    private static class Broker {
+
+        int id;
+        @NonFinal
+        int leader;
+        @NonFinal
+        int follower;
+
+        public int computeTotal() {
+            return leader + follower;
+        }
+
+        public static Broker of(final int id) {
+            return new Broker(id, 0, 0);
+        }
     }
 }

@@ -20,11 +20,11 @@ class WeightedShuffleLeaderStrategyTest {
     void givenAssignmentsAndUnsortedWeightsThenSuffleReplicas() {
         final var config = Configuration.builder()
                 .brokers(List.of(
-                        Configuration.BrokerConfig.builder().id(5).capacity(0.5).build(),
-                        Configuration.BrokerConfig.builder().id(4).capacity(3.0).build(),
-                        Configuration.BrokerConfig.builder().id(3).capacity(0.1).build(),
-                        Configuration.BrokerConfig.builder().id(2).capacity(2.0).build(),
-                        Configuration.BrokerConfig.builder().id(1).capacity(1.0).build()))
+                        Configuration.Broker.builder().id(5).capacity(0.5).build(),
+                        Configuration.Broker.builder().id(4).capacity(3.0).build(),
+                        Configuration.Broker.builder().id(3).capacity(0.1).build(),
+                        Configuration.Broker.builder().id(2).capacity(2.0).build(),
+                        Configuration.Broker.builder().id(1).capacity(1.0).build()))
                 .build();
         final var assignments = Assignments.builder()
                 .partitions(List.of(

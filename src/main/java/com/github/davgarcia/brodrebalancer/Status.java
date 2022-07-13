@@ -31,7 +31,7 @@ public class Status {
 
     public List<Broker> getBrokers(final Set<Integer> ids) {
         return brokers.values().stream()
-                .filter(b -> ids.contains(b.getId()))
+                .filter(b -> ids.contains(b.id))
                 .collect(Collectors.toList());
     }
 
@@ -68,9 +68,9 @@ public class Status {
         System.out.println("Broker Partition  Capac    Current size       Goal size       Diff size    Usage");
         brokers.values().stream()
                 .map(b -> String.format("%6d  %8d  %5.1f  %14.0f  %14.0f  %+14.0f  %6.1f%%",
-                        b.getId(), b.getPartitions().size(), b.getCapacity(), b.getCurrentSize(), b.getGoalSize(),
-                        b.getGoalSize() - b.getCurrentSize(),
-                        b.computeUsageRatio() * 100.0))
+                        b.id, b.partitions.size(), b.capacity, b.currentSize, b.goalSize,
+                        b.goalSize - b.currentSize,
+                        100.0 * b.computeUsageRatio()))
                 .forEach(System.out::println);
         System.out.printf("Total gap: %-14.0f  No of moves: %-10d  Amount moved: %-14.0f%n",
                 computeGap(), cumulativeNumMoves, cumulativeSizeMoved);
@@ -85,7 +85,7 @@ public class Status {
                 .mapToDouble(Double::doubleValue)
                 .sum();
         final var totalCapacity = config.getBrokers().stream()
-                .mapToDouble(Configuration.BrokerConfig::getCapacity)
+                .mapToDouble(Configuration.Broker::getCapacity)
                 .sum();
 
         final var brokers = config.getBrokers().stream()
@@ -105,7 +105,7 @@ public class Status {
 
     private static void validate(final Configuration config, final LogDirs logDirs) {
         final var configIds = config.getBrokers().stream()
-                .map(Configuration.BrokerConfig::getId)
+                .map(Configuration.Broker::getId)
                 .collect(Collectors.toSet());
         final var logDirsIds = logDirs.getBrokers().stream()
                 .map(LogDirs.Broker::getBroker)

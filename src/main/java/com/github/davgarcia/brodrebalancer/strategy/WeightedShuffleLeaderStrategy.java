@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,17 +47,15 @@ public class WeightedShuffleLeaderStrategy implements LeaderStrategy<Object> {
     void electLeaders(final Configuration config, final Assignments assignments, final Random random) { // For testing.
         final var weights = buildWeights(config);
 
-        printLeaders("Leaders before reelection", assignments);
         assignments.getPartitions().stream()
                 .map(Assignments.Partition::getReplicas)
                 .forEach(r -> shuffle(r, filterWeights(weights, r), random));
-        printLeaders("Leaders after reelection", assignments);
     }
 
     private List<Double> buildWeights(final Configuration config) {
         return config.getBrokers().stream()
-                .sorted(Comparator.comparingInt(Configuration.BrokerConfig::getId)) // Config is user given => Can be unsorted.
-                .map(Configuration.BrokerConfig::getCapacity)
+                .sorted(Comparator.comparingInt(Configuration.Broker::getId)) // Config is user given => Can be unsorted.
+                .map(Configuration.Broker::getCapacity)
                 .collect(Collectors.toList());
     }
 
@@ -79,12 +76,5 @@ public class WeightedShuffleLeaderStrategy implements LeaderStrategy<Object> {
         for (int i = 0; i < copy.size(); i++) {
             replicas.set(i, copy.get(positions.get(i)));
         }
-    }
-
-    private void printLeaders(final String title, final Assignments assignments) {
-        final var leaders = assignments.getPartitions().stream()
-                .map(p -> p.getReplicas().get(0))
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        System.out.printf("%s: %s%n", title, leaders);
     }
 }

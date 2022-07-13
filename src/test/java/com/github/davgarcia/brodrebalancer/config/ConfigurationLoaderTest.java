@@ -23,11 +23,11 @@ class ConfigurationLoaderTest {
 
         assertThat(result.getVersion()).isEqualTo(1);
         assertThat(result.getBrokers()).containsExactly(
-                new Configuration.BrokerConfig(1, 1.5),
-                new Configuration.BrokerConfig(2, 1.0),
-                new Configuration.BrokerConfig(3, 1.0),
-                new Configuration.BrokerConfig(4, 2.0),
-                new Configuration.BrokerConfig(5, 1.5));
+                new Configuration.Broker(1, 1.5),
+                new Configuration.Broker(2, 1.0),
+                new Configuration.Broker(3, 1.0),
+                new Configuration.Broker(4, 2.0),
+                new Configuration.Broker(5, 1.5));
     }
 
     @ParameterizedTest

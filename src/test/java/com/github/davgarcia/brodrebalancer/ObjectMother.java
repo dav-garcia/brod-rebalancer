@@ -12,9 +12,9 @@ public class ObjectMother {
     public static Configuration newConfig() {
         return Configuration.builder()
                 .brokers(List.of(
-                        Configuration.BrokerConfig.builder().id(1).capacity(1.0).build(),
-                        Configuration.BrokerConfig.builder().id(2).capacity(1.0).build(),
-                        Configuration.BrokerConfig.builder().id(3).capacity(2.0).build()))
+                        Configuration.Broker.builder().id(1).capacity(1.0).build(),
+                        Configuration.Broker.builder().id(2).capacity(1.0).build(),
+                        Configuration.Broker.builder().id(3).capacity(2.0).build()))
                 .build();
     }
 

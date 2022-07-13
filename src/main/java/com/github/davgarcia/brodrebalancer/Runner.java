@@ -33,6 +33,7 @@ public class Runner {
         logDirs.filterTopics(toSet(config.getTopics().getInclude()), toSet(config.getTopics().getExclude()));
         final var reassignments = rebalancer.rebalance(config, logDirs);
         leaderStrategy.electLeaders(config, reassignments);
+        reassignments.print();
         new Checker().check(Assignments.from(logDirs), reassignments);
         output.save(reassignments);
     }
