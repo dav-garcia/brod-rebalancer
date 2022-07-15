@@ -73,7 +73,9 @@ Run `kafka-log-dirs.sh` from Apache Kafka `bin` directory to export information 
 $ ./bin/kafka-log-dirs.sh --bootstrap-server my-kafka-broker:9092 --broker-list 1,2,3,4,5 --describe > log-dirs.json
 ```
 
-Edit the file to remove the first two lines which are just garbage.
+> **Note**
+>
+> Edit the file to remove the first two lines which are just garbage.
 
 ### Reassignments output
 
@@ -134,9 +136,13 @@ Then, periodically check the progress with a similar command:
 $ ./kafka/bin/kafka-reassign-partitions.sh --bootstrap-server my-kafka-broker:9092 --verify --reassignment-json-file reassignments.json
 ```
 
-> **Note**
+> **Warning**
 >
 > You must run the verify command at least once after the reassignment is complete to make sure the throttling is removed.
+
+> **Warning**
+>
+> It's highly recommended to run the `kafka-preferred-replica-election.sh` command on all topics to make sure the leaders chosen by the rebalancing process are effectively elected.
 
 ## Options
 
